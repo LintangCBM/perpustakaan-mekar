@@ -1,0 +1,58 @@
+<div class="favorit-page">
+  <h1 class="page-title">Buku Favorit Anda</h1>
+
+  <ng-container
+    *ngIf="allFavoriteBooksMaster.length > 0; else noFavoritesOverall"
+  >
+    <div class="category-filters" *ngIf="displayCategories.length > 1">
+      <button
+        *ngFor="let category of displayCategories"
+        class="category-btn"
+        [class.active]="isCategoryActive(category)"
+        (click)="toggleCategory(category)"
+        [disabled]="
+          displayCategories.length <= 1 && category === SEMUA_CATEGORY
+        "
+      >
+        {{ category }}
+      </button>
+    </div>
+
+    <div
+      class="book-grid-container"
+      *ngIf="pagedFavoriteBooks.length > 0; else noFavoritesAfterFilter"
+    >
+      <app-book-card
+        *ngFor="let book of pagedFavoriteBooks"
+        [book]="book"
+        (favoriteToggled)="handleFavoriteToggled($event)"
+      >
+      </app-book-card>
+    </div>
+    <ng-template #noFavoritesAfterFilter>
+      <p
+        *ngIf="
+          booksAfterCategoryFilter.length === 0 && selectedCategories.size > 0
+        "
+        class="no-books-message"
+      >
+        Tidak ada buku favorit yang cocok dengan kategori yang dipilih.
+      </p>
+    </ng-template>
+
+    <app-pagination
+      *ngIf="totalItems > itemsPerPage"
+      [currentPage]="currentPage"
+      [totalItems]="totalItems"
+      [itemsPerPage]="itemsPerPage"
+      (pageChanged)="onPageChanged($event)"
+    >
+    </app-pagination>
+  </ng-container>
+
+  <ng-template #noFavoritesOverall>
+    <p class="no-books-message full-width-message">
+      Anda belum memiliki buku favorit. Tambahkan beberapa!
+    </p>
+  </ng-template>
+</div>

@@ -1,0 +1,170 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 25px;
+  height: var(--header-height);
+  background-color: var(--content-bg-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  transition: padding 0.3s ease-in-out;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+
+  .logo {
+    height: 45px;
+    margin-right: 15px;
+    transition: height 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+  }
+
+  .school-name {
+    h1,
+    h2 {
+      margin: 0;
+      transition: opacity 0.2s ease-out, width 0.2s ease-out,
+        font-size 0.2s ease-out;
+    }
+    h1 {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    h2 {
+      font-size: 0.8em;
+      font-weight: 400;
+      color: var(--secondary-text-color);
+    }
+  }
+}
+
+.header-center {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  padding: 0 15px;
+  transition: flex-grow 0.3s ease-in-out, padding 0.3s ease-in-out;
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: var(--primary-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 8px 15px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: max-width 0.3s ease-in-out;
+
+    .search-icon-img {
+      width: 24x;
+      height: 24px;
+      margin-right: 8px;
+      opacity: 0.6;
+    }
+
+    input {
+      border: none;
+      outline: none;
+      flex-grow: 1;
+      font-size: 0.9em;
+      background-color: transparent;
+
+      &::placeholder {
+        color: var(--secondary-text-color);
+      }
+    }
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: gap 0.3s ease-in-out;
+
+  .header-button {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.9em;
+    color: var(--text-color);
+    transition: background-color 0.2s, color 0.2s, padding 0.3s ease-in-out;
+
+    &:hover {
+      background-color: var(--primary-bg-color);
+    }
+
+    .icon-img {
+      width: 24px;
+      height: 24px;
+      margin-right: 8px;
+      vertical-align: middle;
+      transition: margin-right 0.3s ease-in-out;
+    }
+
+    .button-text {
+      transition: opacity 0.2s ease-out, width 0.2s ease-out; // Smooth hide
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 15px;
+  }
+
+  .header-left {
+    .logo {
+      margin-right: 0;
+    }
+    .school-name {
+      h1,
+      h2 {
+        opacity: 0;
+        width: 0;
+        font-size: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    }
+  }
+
+  .header-center {
+    flex-grow: 0;
+    padding: 0 10px;
+    order: 1;
+  }
+
+  .header-right {
+    gap: 8px;
+    order: 2;
+
+    .header-button {
+      padding: 8px;
+
+      .icon-img {
+        margin-right: 0;
+      }
+      .button-text {
+        opacity: 0;
+        width: 0;
+        font-size: 0;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+    }
+  }
+}

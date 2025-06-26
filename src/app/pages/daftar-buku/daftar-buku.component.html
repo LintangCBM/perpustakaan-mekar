@@ -1,0 +1,52 @@
+<div class="daftar-buku-page">
+  <h1 class="page-title">Daftar Buku</h1>
+  <div class="category-filters" *ngIf="displayCategories.length > 1">
+    <button
+      *ngFor="let category of displayCategories"
+      class="category-btn"
+      [class.active]="isCategoryActive(category)"
+      (click)="toggleCategory(category)"
+    >
+      {{ category }}
+    </button>
+  </div>
+
+  <div
+    class="book-grid-container"
+    *ngIf="pagedBooks.length > 0; else noBooksFound"
+  >
+    <app-book-card
+      *ngFor="let book of pagedBooks"
+      [book]="book"
+      (favoriteToggled)="handleFavoriteToggled($event)"
+    >
+    </app-book-card>
+  </div>
+
+  <ng-template #noBooksFound>
+    <p
+      *ngIf="
+        booksAfterCategoryFilter.length === 0 &&
+        (selectedCategories.size > 0 || allBooksMasterList.length > 0)
+      "
+      class="no-books-message"
+    >
+      <span *ngIf="selectedCategories.size > 0"
+        >Tidak ada buku yang cocok dengan kategori yang dipilih.</span
+      >
+      <span
+        *ngIf="selectedCategories.size === 0 && allBooksMasterList.length === 0"
+        >Belum ada buku tersedia.</span
+      >
+    </p>
+  </ng-template>
+
+  <app-pagination
+    *ngIf="totalItems > itemsPerPage"
+    [currentPage]="currentPage"
+    [totalItems]="totalItems"
+    [itemsPerPage]="itemsPerPage"
+    (pageChanged)="onPageChanged($event)"
+  >
+  </app-pagination>
+</div>

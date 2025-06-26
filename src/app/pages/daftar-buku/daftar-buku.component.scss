@@ -1,0 +1,61 @@
+.daftar-buku-page {
+  padding: 20px;
+}
+
+.page-title {
+  font-size: 2em;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.category-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+
+  .category-btn {
+    padding: 8px 18px;
+    font-size: 0.9em;
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    background-color: #fff;
+    color: var(--secondary-text-color);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+
+    &:hover {
+      background-color: var(--primary-bg-color);
+      border-color: var(--accent-color);
+    }
+
+    &.active {
+      background-color: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+      font-weight: 500;
+    }
+  }
+}
+
+.book-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 25px;
+  padding: 0 10px;
+
+  app-book-card {
+    width: 100%;
+  }
+}
+
+.no-books-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px;
+  color: var(--secondary-text-color);
+  font-size: 1.1em;
+}

@@ -1,0 +1,31 @@
+<div class="pagination-container" *ngIf="totalPages > 0">
+  <button
+    class="pagination-button prev-next"
+    [disabled]="currentPage === 1"
+    (click)="goToPreviousPage()"
+  >
+    « Sebelumnya
+  </button>
+
+  <ng-container *ngFor="let pageNum of pageNumbers">
+    <button
+      *ngIf="typeof pageNum === 'number'"
+      class="pagination-button page-number"
+      [class.active]="pageNum === currentPage"
+      (click)="selectPage(pageNum)"
+    >
+      {{ pageNum }}
+    </button>
+    <span *ngIf="typeof pageNum === 'string'" class="pagination-ellipsis">{{
+      pageNum
+    }}</span>
+  </ng-container>
+
+  <button
+    class="pagination-button prev-next"
+    [disabled]="currentPage === totalPages"
+    (click)="goToNextPage()"
+  >
+    Selanjutnya »
+  </button>
+</div>

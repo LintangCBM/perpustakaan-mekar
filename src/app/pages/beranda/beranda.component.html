@@ -1,0 +1,47 @@
+<div class="beranda-page">
+  <section class="welcome-banner">
+    <div class="banner-text">
+      <h1>Selamat Datang di Website Perpustakaan Mekar SD Negeri Gejayan!</h1>
+      <p>
+        Perpustakaan SD Negeri Gejayan telah didirikan pada tahun 2012, kini
+        hadir dalam bentuk website. Tingkatkan literasi anda dengan meminjam dan
+        membaca buku!
+      </p>
+    </div>
+    <div class="banner-image">
+      <img [src]="welcomeImageUrl" alt="Anak-anak membaca buku" />
+    </div>
+  </section>
+
+  <section class="book-section">
+    <h2>Rekomendasi Buku</h2>
+    <div class="horizontal-scroll-container">
+      <app-book-card
+        *ngFor="let book of rekomendasiBuku"
+        [book]="book"
+        (favoriteToggled)="handleFavoriteToggled($event)"
+      ></app-book-card>
+    </div>
+  </section>
+
+  <section class="book-section">
+    <h2>Daftar Buku</h2>
+    <div class="horizontal-scroll-container">
+      <app-book-card
+        *ngFor="let book of daftarBukuPreview"
+        [book]="book"
+        (favoriteToggled)="handleFavoriteToggled($event)"
+      ></app-book-card>
+    </div>
+    <div class="see-more-container">
+      <a routerLink="/daftar-buku" class="see-more-link">
+        Selengkapnya
+        <img
+          src="assets/icons/mdi_book-search.svg"
+          alt="lihat semua"
+          class="icon"
+        />
+      </a>
+    </div>
+  </section>
+</div>

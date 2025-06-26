@@ -1,0 +1,38 @@
+<header class="app-header">
+  <div class="header-left">
+    <img [src]="logoUrl" alt="Logo Sekolah" class="logo" />
+    <div class="school-name">
+      <h1 class="school-title-main">Perpustakaan Mekar</h1>
+      <h2 class="school-title-sub">SD Negeri Gejayan</h2>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="search-bar">
+      <img
+        src="assets/icons/material-symbols_search-rounded.svg"
+        alt="Search"
+        class="icon search-icon-img"
+      />
+      <input type="text" placeholder="Telusuri Buku" />
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="header-button" routerLink="/login" title="Masuk">
+      <!-- /login route later -->
+      <img
+        src="assets/icons/mdi_user-outline.svg"
+        alt="User"
+        class="icon icon-img"
+      />
+      <span class="button-text">Masuk</span>
+    </button>
+    <button class="header-button" title="Bahasa">
+      <img
+        src="assets/icons/twemoji_flag-indonesia.svg"
+        alt="Bahasa"
+        class="icon icon-img"
+      />
+      <span class="button-text">Bahasa</span>
+    </button>
+  </div>
+</header>
