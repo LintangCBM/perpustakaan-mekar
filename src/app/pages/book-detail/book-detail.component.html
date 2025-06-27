@@ -1,0 +1,68 @@
+<div class="book-detail-page" *ngIf="book$ | async as book; else notFound">
+  <div class="top-bar">
+    <button (click)="goBack()" class="back-button">← Kembali</button>
+  </div>
+  <div class="detail-content">
+    <div class="cover-section">
+      <img
+        [src]="book.coverImageUrl"
+        [alt]="book.title"
+        class="book-cover-large"
+      />
+    </div>
+    <div class="info-section">
+      <p class="book-categories">{{ book.categories.join(", ") }}</p>
+      <h1 class="book-title">{{ book.title }}</h1>
+      <p class="book-author">Oleh {{ book.author }}</p>
+      <div class="book-meta">
+        <span><strong>ID Buku : </strong> {{ book.id }}</span>
+        <span
+          ><strong>Status : </strong>
+          <span class="status-available">Tersedia</span></span
+        >
+      </div>
+      <div class="actions">
+        <button class="action-button borrow">Pinjam Buku</button>
+        <button
+          class="action-button favorite"
+          (click)="handleFavoriteToggled($event, book)"
+          [class.active]="book.isFavorite"
+        >
+          <img
+            *ngIf="book.isFavorite"
+            src="assets/icons/mdi_book-heart.svg"
+            alt="Favorit"
+            class="action-icon-img"
+          />
+          <img
+            *ngIf="!book.isFavorite"
+            src="assets/icons/mdi_book-heart.svg"
+            alt="Tambah ke Favorit"
+            class="action-icon-img"
+          />
+          {{ book.isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit" }}
+        </button>
+      </div>
+      <div class="description-section">
+        <h2>Deskripsi</h2>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non
+          risus. Suspendisse lectus tortor, dignissim sit amet, adipiscing nec,
+          ultricies sed, dolor. Cras elementum ultrices diam. Maecenas ligula
+          massa, varius a, semper congue, euismod non, mi. Proin porttitor, orci
+          nec nonummy molestie, enim est eleifend mi, non fermentum diam nisl
+          sit amet erat.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #notFound>
+  <div class="not-found-container">
+    <h2>Buku tidak ditemukan</h2>
+    <p>Buku yang Anda cari tidak ada atau telah dihapus.</p>
+    <a routerLink="/daftar-buku" class="back-to-list-button"
+      >Kembali ke Daftar Buku</a
+    >
+  </div>
+</ng-template>

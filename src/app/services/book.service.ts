@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, of } from 'rxjs';
 import { Book } from '../components/shared/book-card/book-card.component';
 
 @Injectable({
@@ -167,4 +167,12 @@ export class BookService {
       })
     );
   }
+
+  getBookById(bookId: string | number): Observable<Book | undefined> {
+    const numericId = typeof bookId === 'number' ? bookId : parseInt(bookId, 10);
+    return this.books$.pipe(
+      map((books) => books.find((book) => book.id === numericId))
+    );
+  }
 }
+

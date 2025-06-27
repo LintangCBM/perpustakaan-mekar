@@ -1,4 +1,4 @@
-<div class="book-card" *ngIf="book">
+<div class="book-card" *ngIf="book" [routerLink]="['/buku', book.id]">
   <div class="card-image-container">
     <img [src]="book.coverImageUrl" [alt]="book.title" class="book-cover" />
     <div class="card-actions">
@@ -20,13 +20,6 @@
           class="action-icon-img"
         />
       </button>
-      <!-- <button class="action-btn view-btn" (click)="viewDetails($event)">
-        <img
-          src="assets/icons/mdi_book-plus.svg"
-          alt="Lihat Detail"
-          class="action-icon-img"
-        />
-      </button> -->
     </div>
   </div>
   <div class="book-info">

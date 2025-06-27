@@ -24,4 +24,11 @@ export const routes: Routes = [
         (m) => m.FavoritComponent
       ),
   },
+  {
+    path: 'buku/:id',
+    loadComponent: () =>
+      import('./pages/book-detail/book-detail.component').then(
+        (m) => m.BookDetailComponent
+      ),
+  }
 ];

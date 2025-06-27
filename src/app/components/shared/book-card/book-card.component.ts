@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 export interface Book {
   id: string | number;
@@ -12,7 +13,7 @@ export interface Book {
 
 @Component({
   selector: 'app-book-card',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.scss',
   standalone: true,

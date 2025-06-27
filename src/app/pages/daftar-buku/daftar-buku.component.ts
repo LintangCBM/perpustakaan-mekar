@@ -26,7 +26,7 @@ export class DaftarBukuComponent implements OnInit, OnDestroy {
   readonly SEMUA_CATEGORY = 'Semua';
 
   currentPage: number = 1;
-  itemsPerPage: number = 1;
+  itemsPerPage: number = 20;
   totalItems: number = 0;
 
   constructor(private bookService: BookService) {}

@@ -72,7 +72,7 @@
       display: inline-flex;
       align-items: center;
       padding: 8px 15px;
-      background-color: var(--primary-bg-color);
+      background-color: #fff;
       color: var(--text-color);
       text-decoration: none;
       border-radius: var(--border-radius);
@@ -80,7 +80,7 @@
       transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: white;
+        background-color: var(--primary-bg-color);
       }
 
       .icon {
