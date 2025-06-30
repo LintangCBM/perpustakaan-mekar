@@ -7,14 +7,20 @@
     </div>
   </div>
   <div class="header-center">
-    <div class="search-bar">
-      <img
+    <form class="search-bar" (ngSubmit)="onSearchSubmit($event, searchInput)">
+      <button type="submit" class="search-button" title="Cari">
+        <img
         src="assets/icons/material-symbols_search-rounded.svg"
         alt="Search"
         class="icon search-icon-img"
       />
-      <input type="text" placeholder="Telusuri Buku" />
-    </div>
+      </button>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Cari judul atau Penulis..."
+      />
+    </form>
   </div>
   <div class="header-right">
     <button class="header-button" routerLink="/login" title="Masuk">

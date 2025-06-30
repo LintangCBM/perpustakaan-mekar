@@ -9,6 +9,7 @@ export interface Book {
   coverImageUrl: string;
   isFavorite?: boolean;
   categories: string[];
+  description?: string;
 }
 
 @Component({
@@ -27,10 +28,5 @@ export class BookCardComponent {
     if (this.book) {
       this.favoriteToggled.emit(this.book.id);
     }
-  }
-
-  viewDetails(event: MouseEvent) {
-    event.stopPropagation();
-    console.log('View details for:', this.book.title);
   }
 }

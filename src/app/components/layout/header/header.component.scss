@@ -63,6 +63,15 @@
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: max-width 0.3s ease-in-out;
 
+    .search-button {
+      display: flex;
+      align-items: center;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
     .search-icon-img {
       width: 24x;
       height: 24px;

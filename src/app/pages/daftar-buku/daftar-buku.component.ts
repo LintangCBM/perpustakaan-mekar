@@ -5,8 +5,9 @@ import {
   Book,
 } from '../../components/shared/book-card/book-card.component';
 import { BookService } from '../../services/book.service';
-import { Subscription, map } from 'rxjs';
+import { Subscription, map, combineLatest } from 'rxjs';
 import { PaginationComponent } from '../../components/shared/pagination/pagination.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-daftar-buku',
@@ -19,31 +20,40 @@ export class DaftarBukuComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   allBooksMasterList: Book[] = [];
-  booksAfterCategoryFilter: Book[] = [];
+  booksAfterFilter: Book[] = [];
   pagedBooks: Book[] = [];
   displayCategories: string[] = [];
   selectedCategories: Set<string> = new Set();
+  searchQuery: string = '';
   readonly SEMUA_CATEGORY = 'Semua';
 
   currentPage: number = 1;
   itemsPerPage: number = 20;
   totalItems: number = 0;
 
-  constructor(private bookService: BookService) {}
+  constructor(
+    private bookService: BookService,
+    private route: ActivatedRoute,
+  ) {}
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.bookService
-        .getAllBooks()
-        .pipe(
-          map((books) =>
-            [...books].sort((a, b) => a.title.localeCompare(b.title))
-          )
+    const books$ = this.bookService
+      .getAllBooks()
+      .pipe(
+        map((books) =>
+          [...books].sort((a, b) => a.title.localeCompare(b.title))
         )
-        .subscribe((sortedBooks) => {
-          this.allBooksMasterList = sortedBooks;
-          this.applyCategoryFiltersAndPaginate();
-        })
+      );
+
+    const queryParams$ = this.route.queryParamMap;
+
+    this.subscriptions.add(
+      combineLatest([books$, queryParams$]).subscribe(([books, params]) => {
+        this.allBooksMasterList = books;
+        this.searchQuery = params.get('q') || '';
+        this.currentPage = 1;
+        this.applyAllFiltersAndPaginate();
+      })
     );
 
     this.subscriptions.add(
@@ -68,7 +78,7 @@ export class DaftarBukuComponent implements OnInit, OnDestroy {
         this.selectedCategories.add(category);
       }
     }
-    this.applyCategoryFiltersAndPaginate();
+    this.applyAllFiltersAndPaginate();
   }
 
   isCategoryActive(category: string): boolean {
@@ -78,25 +88,37 @@ export class DaftarBukuComponent implements OnInit, OnDestroy {
     return this.selectedCategories.has(category);
   }
 
-  applyCategoryFiltersAndPaginate(): void {
-    if (this.selectedCategories.size === 0) {
-      this.booksAfterCategoryFilter = [...this.allBooksMasterList];
+  applyAllFiltersAndPaginate(): void {
+    let filteredBySearch: Book[] = [];
+    if (this.searchQuery) {
+      const lowerCaseQuery = this.searchQuery.toLowerCase();
+      filteredBySearch = this.allBooksMasterList.filter(
+        (book) =>
+          book.title.toLowerCase().includes(lowerCaseQuery) ||
+          book.author.toLowerCase().includes(lowerCaseQuery)
+      );
     } else {
-      this.booksAfterCategoryFilter = this.allBooksMasterList.filter((book) =>
+      filteredBySearch = [...this.allBooksMasterList];
+    }
+
+    if (this.selectedCategories.size === 0) {
+      this.booksAfterFilter = [...filteredBySearch];
+    } else {
+      this.booksAfterFilter = filteredBySearch.filter((book) =>
         (book.categories || []).some((cat) => this.selectedCategories.has(cat))
       );
     }
 
-    this.totalItems = this.booksAfterCategoryFilter.length;
+    this.totalItems = this.booksAfterFilter.length;
 
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    this.pagedBooks = this.booksAfterCategoryFilter.slice(startIndex, endIndex);
+    this.pagedBooks = this.booksAfterFilter.slice(startIndex, endIndex);
   }
 
   onPageChanged(page: number): void {
     this.currentPage = page;
-    this.applyCategoryFiltersAndPaginate();
+    this.applyAllFiltersAndPaginate();
   }
 
   ngOnDestroy(): void {

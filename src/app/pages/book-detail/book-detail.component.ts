@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { BookService } from '../../services/book.service';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Book } from '../../components/shared/book-card/book-card.component';
 import { Observable } from 'rxjs';
 
@@ -18,7 +18,7 @@ export class BookDetailComponent implements OnInit {
   constructor(
     private bookService: BookService,
     private route: ActivatedRoute,
-    private router: Router
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -26,12 +26,12 @@ export class BookDetailComponent implements OnInit {
     if (bookId) {
       this.book$ = this.bookService.getBookById(bookId);
     } else {
-      this.router.navigate(['/daftar-buku']);
+      this.location.back();
     }
   }
 
   goBack(): void {
-    window.history.back();
+    this.location.back();
   }
 
   handleFavoriteToggled(event: MouseEvent, book: Book): void {

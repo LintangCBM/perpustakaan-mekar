@@ -1,5 +1,10 @@
 <div class="daftar-buku-page">
-  <h1 class="page-title">Daftar Buku</h1>
+  <div *ngIf="searchQuery" class="search-info">
+    <h1 class="page-title">Hasil pencarian untuk : "{{ searchQuery }}</h1>
+  </div>
+
+  <h1 class="page-title" *ngIf="!searchQuery">Daftar Buku</h1>
+
   <div class="category-filters" *ngIf="displayCategories.length > 1">
     <button
       *ngFor="let category of displayCategories"
@@ -8,6 +13,7 @@
       (click)="toggleCategory(category)"
     >
       {{ category }}
+
     </button>
   </div>
 
@@ -24,20 +30,8 @@
   </div>
 
   <ng-template #noBooksFound>
-    <p
-      *ngIf="
-        booksAfterCategoryFilter.length === 0 &&
-        (selectedCategories.size > 0 || allBooksMasterList.length > 0)
-      "
-      class="no-books-message"
-    >
-      <span *ngIf="selectedCategories.size > 0"
-        >Tidak ada buku yang cocok dengan kategori yang dipilih.</span
-      >
-      <span
-        *ngIf="selectedCategories.size === 0 && allBooksMasterList.length === 0"
-        >Belum ada buku tersedia.</span
-      >
+    <p class="no-books-message">
+      Tidak ada buku yang cocok dengan kriteria Anda.
     </p>
   </ng-template>
 
