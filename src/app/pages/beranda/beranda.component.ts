@@ -1,9 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  BookCardComponent,
-  Book,
-} from '../../components/shared/book-card/book-card.component';
+import { BookCardComponent } from '../../components/shared/book-card/book-card.component';
+import { Book } from '../../models/book.model';
 import { BookService } from '../../services/book.service';
 import { Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';

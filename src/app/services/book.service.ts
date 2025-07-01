@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, map, of } from 'rxjs';
-import { Book } from '../components/shared/book-card/book-card.component';
+import { Book } from '../models/book.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +16,7 @@ export class BookService {
         coverImageUrl:
           'https://placehold.co/180x240/DDD/555?text=Novel+Fiksi+Sejarah',
         categories: ['Novel', 'Fiksi', 'Sejarah'],
-        descriprtion:
+        description:
           'Bumi Manusia adalah novel karya Pramoedya Ananta Toer yang mengisahkan perjuangan seorang pemuda pribumi di masa penjajahan Belanda. Novel ini menggambarkan konflik sosial, politik, dan budaya yang terjadi pada masa itu.',
       },
       {

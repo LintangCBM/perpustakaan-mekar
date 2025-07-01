@@ -1,46 +1,9 @@
 <div class="daftar-buku-page">
-  <div *ngIf="searchQuery" class="search-info">
-    <h1 class="page-title">Hasil pencarian untuk : "{{ searchQuery }}</h1>
+  <div *ngIf="searchQuery$ | async as query" class="search-info">
+    <h1 *ngIf="query" class="page-title">
+      Hasil pencarian untuk : "{{ query }}"
+    </h1>
+    <h1 *ngIf="!query" class="page-title">Daftar Buku</h1>
   </div>
-
-  <h1 class="page-title" *ngIf="!searchQuery">Daftar Buku</h1>
-
-  <div class="category-filters" *ngIf="displayCategories.length > 1">
-    <button
-      *ngFor="let category of displayCategories"
-      class="category-btn"
-      [class.active]="isCategoryActive(category)"
-      (click)="toggleCategory(category)"
-    >
-      {{ category }}
-
-    </button>
-  </div>
-
-  <div
-    class="book-grid-container"
-    *ngIf="pagedBooks.length > 0; else noBooksFound"
-  >
-    <app-book-card
-      *ngFor="let book of pagedBooks"
-      [book]="book"
-      (favoriteToggled)="handleFavoriteToggled($event)"
-    >
-    </app-book-card>
-  </div>
-
-  <ng-template #noBooksFound>
-    <p class="no-books-message">
-      Tidak ada buku yang cocok dengan kriteria Anda.
-    </p>
-  </ng-template>
-
-  <app-pagination
-    *ngIf="totalItems > itemsPerPage"
-    [currentPage]="currentPage"
-    [totalItems]="totalItems"
-    [itemsPerPage]="itemsPerPage"
-    (pageChanged)="onPageChanged($event)"
-  >
-  </app-pagination>
+  <app-book-list [books]="(books$ | async) || []"></app-book-list>
 </div>

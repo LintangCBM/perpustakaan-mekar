@@ -1,0 +1,37 @@
+<div class="category-filters" *ngIf="displayCategories.length > 1">
+  <button
+    *ngFor="let category of displayCategories"
+    class="category-btn"
+    [class.active]="isCategoryActive(category)"
+    (click)="toggleCategory(category)"
+  >
+    {{ category }}
+  </button>
+</div>
+
+<div
+  class="book-grid-container"
+  *ngIf="pagedBooks.length > 0; else noBooksFound"
+>
+  <app-book-card
+    *ngFor="let book of pagedBooks"
+    [book]="book"
+    (favoriteToggled)="handleFavoriteToggled($event)"
+  >
+  </app-book-card>
+</div>
+
+<ng-template #noBooksFound>
+  <p class="no-books-message">
+    Tidak ada buku yang cocok dengan kriteria Anda.
+  </p>
+</ng-template>
+
+<app-pagination
+  *ngIf="totalItems > itemsPerPage"
+  [currentPage]="currentPage"
+  [totalItems]="totalItems"
+  [itemsPerPage]="itemsPerPage"
+  (pageChanged)="onPageChanged($event)"
+>
+</app-pagination>

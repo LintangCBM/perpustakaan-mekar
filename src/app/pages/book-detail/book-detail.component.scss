@@ -92,13 +92,16 @@
     }
     .favorite {
       background-color: #fff;
-      border: 1px solid var(--border-color);
       transition: background-color 0.2s ease;
       &:hover {
         background-color: var(--primary-bg-color);
       }
       &.favorite.active {
         background-color: var(--accent-color);
+        color: white;
+        .action-icon-img {
+          filter: brightness(0) invert(1);
+        }
       }
     }
     .action-icon-img {

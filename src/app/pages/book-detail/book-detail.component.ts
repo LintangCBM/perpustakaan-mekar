@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Book } from '../../components/shared/book-card/book-card.component';
+import { Book } from '../../models/book.model';
 import { Observable } from 'rxjs';
 
 @Component({
