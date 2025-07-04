@@ -1,5 +1,4 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { BookCardComponent } from '../book-card/book-card.component';
 import { Book } from '../../../models/book.model';
 import { PaginationComponent } from '../pagination/pagination.component';
@@ -7,7 +6,7 @@ import { BookService } from '../../../services/book.service';
 
 @Component({
   selector: 'app-book-list',
-  imports: [CommonModule, BookCardComponent, PaginationComponent],
+  imports: [BookCardComponent, PaginationComponent],
   templateUrl: './book-list.component.html',
   styleUrl: './book-list.component.scss',
   standalone: true,

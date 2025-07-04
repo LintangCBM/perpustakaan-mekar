@@ -1,7 +1,8 @@
 <aside class="app-sidebar">
   <nav>
     <ul>
-      <li *ngFor="let item of navItems">
+      @for (item of navItems; track item.route) {
+      <li>
         <a
           [routerLink]="item.route"
           routerLinkActive="active-link"
@@ -11,6 +12,7 @@
           <span class="nav-label">{{ item.label }}</span>
         </a>
       </li>
+      }
     </ul>
   </nav>
 </aside>

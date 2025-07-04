@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { BookListComponent } from '../../components/shared/book-list/book-list.component'; // <-- Import new component
 import { Book } from '../../models/book.model';
@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-daftar-buku',
   standalone: true,
-  imports: [CommonModule, BookListComponent],
+  imports: [AsyncPipe, BookListComponent],
   templateUrl: './daftar-buku.component.html',
   styleUrl: './daftar-buku.component.scss',
 })
@@ -23,21 +23,7 @@ export class DaftarBukuComponent {
     );
 
     this.books$ = this.searchQuery$.pipe(
-      switchMap((query) =>
-        this.bookService.getAllBooks().pipe(
-          map((books) => {
-            if (!query) {
-              return books;
-            }
-            const lowerCaseQuery = query.toLowerCase();
-            return books.filter(
-              (book) =>
-                book.title.toLowerCase().includes(lowerCaseQuery) ||
-                book.author.toLowerCase().includes(lowerCaseQuery)
-            );
-          })
-        )
-      )
+      switchMap((query) => this.bookService.searchBooks(query))
     );
   }
 }

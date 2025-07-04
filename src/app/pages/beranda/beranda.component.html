@@ -16,22 +16,24 @@
   <section class="book-section">
     <h2>Rekomendasi Buku</h2>
     <div class="horizontal-scroll-container">
+      @for (book of (rekomendasiBuku$ | async); track book.id) {
       <app-book-card
-        *ngFor="let book of rekomendasiBuku"
         [book]="book"
         (favoriteToggled)="handleFavoriteToggled($event)"
       ></app-book-card>
+      }
     </div>
   </section>
 
   <section class="book-section">
     <h2>Daftar Buku</h2>
     <div class="horizontal-scroll-container">
+      @for (book of (daftarBukuPreview$ | async); track book.id) {
       <app-book-card
-        *ngFor="let book of daftarBukuPreview"
         [book]="book"
         (favoriteToggled)="handleFavoriteToggled($event)"
       ></app-book-card>
+      }
     </div>
     <div class="see-more-container">
       <a routerLink="/daftar-buku" class="see-more-link">

@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   Component,
   Input,
@@ -10,7 +9,7 @@ import {
 
 @Component({
   selector: 'app-pagination',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
   standalone: true,

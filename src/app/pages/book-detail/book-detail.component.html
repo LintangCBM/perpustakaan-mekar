@@ -1,4 +1,5 @@
-<div class="book-detail-page" *ngIf="book$ | async as book; else notFound">
+@if (book$ | async; as book) {
+<div class="book-detail-page">
   <div class="top-bar">
     <button (click)="goBack()" class="back-button">← Kembali</button>
   </div>
@@ -28,39 +29,38 @@
           (click)="handleFavoriteToggled($event, book)"
           [class.active]="book.isFavorite"
         >
+          @if (book.isFavorite) {
           <img
-            *ngIf="book.isFavorite"
             src="assets/icons/mdi_book-heart.svg"
             alt="Favorit"
             class="action-icon-img"
           />
+          } @else {
           <img
-            *ngIf="!book.isFavorite"
             src="assets/icons/mdi_book-heart-outline.svg"
             alt="Tambah ke Favorit"
             class="action-icon-img"
           />
-          {{ book.isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit" }}
+          } {{ book.isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit" }}
         </button>
       </div>
       <div class="description-section">
         <h2>Deskripsi</h2>
-        <p *ngIf="book.description; else noDescription">
-          {{ book.description }}
-        </p>
-        <ng-template #noDescription>
-          <p><i>Deskripsi untuk buku ini tidak tersedia.</i></p>
-        </ng-template>
+        @if (book.description) {
+        <p>{{ book.description }}</p>
+        } @else {
+        <p><i>Deskripsi untuk buku ini tidak tersedia.</i></p>
+        }
       </div>
     </div>
   </div>
 </div>
-<ng-template #notFound>
-  <div class="not-found-container">
-    <h2>Buku tidak ditemukan</h2>
-    <p>Buku yang Anda cari tidak ada atau telah dihapus.</p>
-    <a routerLink="/daftar-buku" class="back-to-list-button"
-      >Kembali ke Daftar Buku</a
-    >
-  </div>
-</ng-template>
+} @else {
+<div class="not-found-container">
+  <h2>Buku tidak ditemukan</h2>
+  <p>Buku yang Anda cari tidak ada atau telah dihapus.</p>
+  <a routerLink="/daftar-buku" class="back-to-list-button"
+    >Kembali ke Daftar Buku</a
+  >
+</div>
+}

@@ -1,4 +1,5 @@
-<div class="pagination-container" *ngIf="totalPages > 0">
+@if (totalPages > 0) {
+<div class="pagination-container">
   <button
     class="pagination-button prev-next"
     [disabled]="currentPage === 1"
@@ -7,19 +8,18 @@
     « Sebelumnya
   </button>
 
-  <ng-container *ngFor="let pageNum of pageNumbers">
-    <button
-      *ngIf="typeof pageNum === 'number'"
-      class="pagination-button page-number"
-      [class.active]="pageNum === currentPage"
-      (click)="selectPage(pageNum)"
-    >
-      {{ pageNum }}
-    </button>
-    <span *ngIf="typeof pageNum === 'string'" class="pagination-ellipsis">{{
-      pageNum
-    }}</span>
-  </ng-container>
+  @for (pageNum of pageNumbers; track $index) { @if (typeof pageNum ===
+  'number') {
+  <button
+    class="pagination-button page-number"
+    [class.active]="pageNum === currentPage"
+    (click)="selectPage(pageNum)"
+  >
+    {{ pageNum }}
+  </button>
+  } @if (typeof pageNum === 'string') {
+  <span class="pagination-ellipsis">{{ pageNum }}</span>
+  } }
 
   <button
     class="pagination-button prev-next"
@@ -29,3 +29,4 @@
     Selanjutnya »
   </button>
 </div>
+}

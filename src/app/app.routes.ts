@@ -30,5 +30,12 @@ export const routes: Routes = [
       import('./pages/book-detail/book-detail.component').then(
         (m) => m.BookDetailComponent
       ),
-  }
+  },
+  {
+    path: 'informasi',
+    loadComponent: () =>
+      import('./pages/informasi/informasi.component').then(
+        (m) => m.InformasiComponent
+      ),
+  },
 ];

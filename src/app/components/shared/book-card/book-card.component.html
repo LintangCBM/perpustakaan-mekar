@@ -1,4 +1,5 @@
-<div class="book-card" *ngIf="book" [routerLink]="['/buku', book.id]">
+@if (book) {
+<div class="book-card" [routerLink]="['/buku', book.id]">
   <div class="card-image-container">
     <img [src]="book.coverImageUrl" [alt]="book.title" class="book-cover" />
     <div class="card-actions">
@@ -7,18 +8,19 @@
         (click)="onToggleFavorite($event)"
         [class.active]="book.isFavorite"
       >
+        @if (book.isFavorite) {
         <img
-          *ngIf="book.isFavorite"
           src="assets/icons/mdi_book-heart.svg"
           alt="Favorit"
           class="action-icon-img"
         />
+        } @else {
         <img
-          *ngIf="!book.isFavorite"
           src="assets/icons/mdi_book-heart-outline.svg"
           alt="Tambah ke Favorit"
           class="action-icon-img"
         />
+        }
       </button>
     </div>
   </div>
@@ -27,3 +29,4 @@
     <h3 class="book-title">{{ book.title }}</h3>
   </div>
 </div>
+}

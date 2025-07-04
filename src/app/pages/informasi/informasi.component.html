@@ -1,0 +1,53 @@
+<div class="informasi-page">
+  <section class="about-section">
+    <h1>Tentang Perpustakaan SD Negeri Gejayan</h1>
+    <p class="intro-paragraph">
+      Perpustakaan SD Negeri Gejayan telah didirikan pada tahun 19xx dengan
+      tujuan untuk memenuhi fasilitas sekolah di SD Negeri Gejayan. Saat ini
+      perpustakaan telah hadir dalam bentuk website yang memiliki manfaat untuk
+      meningkatkan literasi siswa dengan meminjam dan membaca buku. Perpustakaan
+      SD Negeri Gejayan ini telah memiliki berbagai informasi dan panduan kepada
+      siswa, guru, hingga pengunjung yang telah mampir perpustakaan ini.
+    </p>
+
+    <h2>Visi dan Misi Perpustakaan SD Negeri Gejayan</h2>
+    <div class="visi-misi-container">
+      <div class="vm-box">
+        <h3>Visi</h3>
+        <p>
+          Perpustakaan SD Negeri Gejayan akan meningkatkan kualitas fasilitas
+          perpustakaan dan kenyamaan kepada seluruh siswa dan pengunjung.
+        </p>
+      </div>
+      <div class="vm-box">
+        <h3>Misi</h3>
+        <ul>
+          <li>Meningkatkan literasi siswa sd negeri gejayan.</li>
+          <li>
+            Mengambangkan pemahaman dan melek tentang teknologi informasi.
+          </li>
+          <li>Memajukan fasilitas perpustakaan dengan baik.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="info-list-section">
+    <h2>Daftar Informasi Perpustakaan SD Negeri Gejayan</h2>
+    <div class="info-grid">
+      @for (card of infoCards; track $index) {
+      <div class="info-card">
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.description }}</p>
+        <a [href]="card.link" class="details-link">
+          <span>Selengkapnya</span>
+          <img
+            src="assets/icons/octicon_arrow-right-16.svg"
+            alt="Selengkapnya"
+          />
+        </a>
+      </div>
+      }
+    </div>
+  </section>
+</div>

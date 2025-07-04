@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map, of } from 'rxjs';
+import { BehaviorSubject, Observable, map } from 'rxjs';
 import { Book } from '../models/book.model';
 
 @Injectable({
@@ -145,6 +145,22 @@ export class BookService {
     this.books$.next(currentBooks);
   }
 
+  searchBooks(query: string): Observable<Book[]> {
+    return this.books$.pipe(
+      map(books => {
+        if (!query) {
+          return books;
+        }
+        const lowerCaseQuery = query.toLowerCase();
+        return books.filter(
+          (book) =>
+            book.title.toLowerCase().includes(lowerCaseQuery) ||
+            book.author.toLowerCase().includes(lowerCaseQuery)
+        );
+      })
+    );
+  }
+
   getAllBooks(): Observable<Book[]> {
     return this.books$.asObservable();
   }
@@ -171,13 +187,11 @@ export class BookService {
 
   toggleFavorite(bookId: string | number): void {
     const currentBooks = this.books$.getValue();
-    const updatedBooks = currentBooks.map((book) => {
-      if (book.id === bookId) {
-        return { ...book, isFavorite: !book.isFavorite };
-      }
-      return book;
-    });
-    this.books$.next(updatedBooks);
+    const bookToToggle = currentBooks.find(book => book.id === bookId);
+    if (bookToToggle) {
+      bookToToggle.isFavorite = !bookToToggle.isFavorite;
+    }
+    this.books$.next(currentBooks);
   }
 
   getUniqueCategories(): Observable<string[]> {

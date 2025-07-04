@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { AsyncPipe, Location } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Book } from '../../models/book.model';
@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-book-detail',
-  imports: [CommonModule, RouterLink],
+  imports: [AsyncPipe, RouterLink],
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
   standalone: true,

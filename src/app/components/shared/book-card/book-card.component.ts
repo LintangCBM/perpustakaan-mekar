@@ -1,13 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Book } from '../../../models/book.model';
 
 @Component({
   selector: 'app-book-card',
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './book-card.component.html',
   styleUrl: './book-card.component.scss',
+  standalone: true,
 })
 export class BookCardComponent {
   @Input() book!: Book;
