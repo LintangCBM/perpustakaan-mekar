@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { BookService } from '../../services/book.service';
-import { BookListComponent } from '../../components/shared/book-list/book-list.component'; // <-- Import new component
+import { BookListComponent } from '../../components/shared/book-list/book-list.component';
 import { Book } from '../../models/book.model';
 import { Observable, map, switchMap } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';

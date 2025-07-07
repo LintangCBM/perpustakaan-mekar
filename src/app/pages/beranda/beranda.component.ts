@@ -1,9 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import { BookCardComponent } from '../../components/shared/book-card/book-card.component';
 import { Book } from '../../models/book.model';
 import { BookService } from '../../services/book.service';
-import { Subscription } from 'rxjs';
 import { RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 
