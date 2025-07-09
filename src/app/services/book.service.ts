@@ -147,7 +147,7 @@ export class BookService {
 
   searchBooks(query: string): Observable<Book[]> {
     return this.books$.pipe(
-      map(books => {
+      map((books) => {
         if (!query) {
           return books;
         }
@@ -187,11 +187,13 @@ export class BookService {
 
   toggleFavorite(bookId: string | number): void {
     const currentBooks = this.books$.getValue();
-    const bookToToggle = currentBooks.find(book => book.id === bookId);
-    if (bookToToggle) {
-      bookToToggle.isFavorite = !bookToToggle.isFavorite;
-    }
-    this.books$.next(currentBooks);
+    const updatedBooks = currentBooks.map((book) => {
+      if (book.id !== bookId) {
+        return book;
+      }
+      return { ...book, isFavorite: !book.isFavorite };
+    });
+    this.books$.next(updatedBooks);
   }
 
   getUniqueCategories(): Observable<string[]> {

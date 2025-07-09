@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Slab:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap');
 
 :root {
   --primary-bg-color: #FFE8E8;
@@ -15,7 +15,7 @@
 }
 body {
   margin: 0;
-  font-family: 'Roboto';
+  font-family: 'Roboto', sans-serif;
   background-color: var(--primary-bg-color);
   color: var(--text-color);
   box-sizing: border-box;

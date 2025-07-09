@@ -3,7 +3,7 @@ import { AsyncPipe, Location } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Book } from '../../models/book.model';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-book-detail',
@@ -12,22 +12,24 @@ import { Observable } from 'rxjs';
   styleUrl: './book-detail.component.scss',
   standalone: true,
 })
-export class BookDetailComponent implements OnInit {
+export class BookDetailComponent {
   book$!: Observable<Book | undefined>;
 
   constructor(
     private bookService: BookService,
     private route: ActivatedRoute,
-    private location: Location,
-  ) {}
-
-  ngOnInit(): void {
-    const bookId = this.route.snapshot.paramMap.get('id');
-    if (bookId) {
-      this.book$ = this.bookService.getBookById(bookId);
-    } else {
-      this.location.back();
-    }
+    private location: Location
+  ) {
+    this.book$ = this.route.paramMap.pipe(
+      switchMap((params) => {
+        const bookId = params.get('id');
+        if (bookId) {
+          return this.bookService.getBookById(bookId);
+        }
+        this.location.back();
+        return new Observable<undefined>();
+      })
+    );
   }
 
   goBack(): void {

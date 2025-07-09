@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { BerandaComponent } from './pages/beranda/beranda.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'beranda', pathMatch: 'full' },
@@ -36,6 +35,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/informasi/informasi.component').then(
         (m) => m.InformasiComponent
+      ),
+  },
+  {
+    path: 'informasi/:slug',
+    loadComponent: () =>
+      import('./pages/info-detail/info-detail.component').then(
+        (m) => m.InfoDetailComponent
       ),
   },
 ];

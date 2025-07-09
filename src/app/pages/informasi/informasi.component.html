@@ -24,7 +24,7 @@
         <ul>
           <li>Meningkatkan literasi siswa sd negeri gejayan.</li>
           <li>
-            Mengambangkan pemahaman dan melek tentang teknologi informasi.
+            Mengembangkan pemahaman dan melek tentang teknologi informasi.
           </li>
           <li>Memajukan fasilitas perpustakaan dengan baik.</li>
         </ul>
@@ -35,11 +35,11 @@
   <section class="info-list-section">
     <h2>Daftar Informasi Perpustakaan SD Negeri Gejayan</h2>
     <div class="info-grid">
-      @for (card of infoCards; track $index) {
+      @for (card of infoCards; track card.routerLink) {
       <div class="info-card">
         <h3>{{ card.title }}</h3>
         <p>{{ card.description }}</p>
-        <a [href]="card.link" class="details-link">
+        <a [routerLink]="card.routerLink" class="details-link">
           <span>Selengkapnya</span>
           <img
             src="assets/icons/octicon_arrow-right-16.svg"

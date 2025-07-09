@@ -1,0 +1,40 @@
+@if (content$ | async; as content) {
+<div class="info-detail-page">
+  <div class="top-bar">
+    <button (click)="goBack()" class="back-button">
+      ← Kembali ke Informasi
+    </button>
+  </div>
+
+  <h1 class="page-title">{{ content.title }}</h1>
+
+  <div class="content-body">
+    @for (block of content.body; track $index) { @switch (block.type) { @case
+    ('h3') {
+    <h3>{{ block.content }}</h3>
+    } @case ('p') {
+    <p>{{ block.content }}</p>
+    } @case ('ol') {
+    <ol>
+      @for (item of block.content; track $index) {
+      <li>{{ item }}</li>
+      }
+    </ol>
+    } @case ('ul') {
+    <ul>
+      @for (item of block.content; track $index) {
+      <li>{{ item }}</li>
+      }
+    </ul>
+    } } }
+  </div>
+</div>
+} @else {
+<div class="not-found-container">
+  <h2>Konten tidak ditemukan</h2>
+  <p>Informasi yang Anda cari tidak ada atau URL salah.</p>
+  <a routerLink="/informasi" class="back-to-list-button"
+    >Kembali ke Halaman Informasi</a
+  >
+</div>
+}

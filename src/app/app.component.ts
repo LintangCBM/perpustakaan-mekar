@@ -11,6 +11,4 @@ import { FooterComponent } from './components/layout/footer/footer.component';
   styleUrl: './app.component.scss',
   standalone: true,
 })
-export class AppComponent {
-  protected title = 'perpustakaan-mekar';
-}
+export class AppComponent {}
