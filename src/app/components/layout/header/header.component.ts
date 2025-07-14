@@ -1,18 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { Observable } from 'rxjs';
+import { User } from '../../../models/user.model';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, FormsModule],
+  imports: [RouterLink, FormsModule, AsyncPipe],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
   standalone: true,
 })
 export class HeaderComponent {
-  logoUrl = 'assets/images/logo.png';
+  private authService = inject(AuthService);
+  private router = inject(Router);
 
-  constructor(private router: Router) {}
+  logoUrl = 'assets/images/logo.png';
+  user$: Observable<User | null> = this.authService.currentUser;
 
   onSearchSubmit(event: Event, searchInput: HTMLInputElement): void {
     event.preventDefault();
@@ -22,5 +28,9 @@ export class HeaderComponent {
         queryParams: { q: searchTerm },
       });
     }
+  }
+
+  onLogout(): void {
+    this.authService.logout();
   }
 }

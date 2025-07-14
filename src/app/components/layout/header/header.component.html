@@ -10,10 +10,10 @@
     <form class="search-bar" (ngSubmit)="onSearchSubmit($event, searchInput)">
       <button type="submit" class="search-button" title="Cari">
         <img
-        src="assets/icons/material-symbols_search-rounded.svg"
-        alt="Search"
-        class="icon search-icon-img"
-      />
+          src="assets/icons/material-symbols_search-rounded.svg"
+          alt="Search"
+          class="icon search-icon-img"
+        />
       </button>
       <input
         #searchInput
@@ -23,8 +23,25 @@
     </form>
   </div>
   <div class="header-right">
+    @if (user$ | async; as user) {
+    <span class="welcome-text">Halo, {{ user.nama }}</span>
+    <button class="header-button" routerLink="/akun" title="Akun Saya">
+      <img
+        src="assets/icons/mdi_user-outline.svg"
+        alt="User"
+        class="icon icon-img"
+      />
+      <span class="button-text">Akun Saya</span>
+    </button>
+    <button
+      class="header-button logout-btn"
+      (click)="onLogout()"
+      title="Keluar"
+    >
+      <span class="button-text">Keluar</span>
+    </button>
+    } @else {
     <button class="header-button" routerLink="/login" title="Masuk">
-      <!-- /login route later -->
       <img
         src="assets/icons/mdi_user-outline.svg"
         alt="User"
@@ -40,5 +57,6 @@
       />
       <span class="button-text">Bahasa</span>
     </button>
+    }
   </div>
 </header>

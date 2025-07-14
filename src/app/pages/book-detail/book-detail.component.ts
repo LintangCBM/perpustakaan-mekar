@@ -1,19 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AsyncPipe, Location } from '@angular/common';
 import { BookService } from '../../services/book.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Book } from '../../models/book.model';
 import { Observable, switchMap } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
+import { PeminjamanService } from '../../services/peminjaman.service';
+import { Router } from '@angular/router';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-book-detail',
-  imports: [AsyncPipe, RouterLink],
+  imports: [AsyncPipe, RouterLink, NgClass],
   templateUrl: './book-detail.component.html',
   styleUrl: './book-detail.component.scss',
   standalone: true,
 })
 export class BookDetailComponent {
   book$!: Observable<Book | undefined>;
+  private authService = inject(AuthService);
+  private peminjamanService = inject(PeminjamanService);
+  private router = inject(Router);
+  borrowingFeedback: { message: string, type: 'success' | 'error' } | null = null;
 
   constructor(
     private bookService: BookService,
@@ -39,5 +47,31 @@ export class BookDetailComponent {
   handleFavoriteToggled(event: MouseEvent, book: Book): void {
     event.stopPropagation();
     this.bookService.toggleFavorite(book.id);
+  }
+
+  onPinjamBuku(book: Book): void {
+    const currentUser = this.authService.currentUserValue;
+    this.borrowingFeedback = null;
+
+    if (!currentUser) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    this.peminjamanService.pinjamBuku(currentUser, book).subscribe({
+      next: () => {
+        this.borrowingFeedback = {
+          message: `Buku "${book.title}" berhasil dipinjam! Anda akan dialihkan...`,
+          type: 'success'
+        };
+        setTimeout(() => this.router.navigate(['/akun']), 2000);
+      },
+      error: (err) => {
+        this.borrowingFeedback = {
+          message: `Gagal meminjam buku: ${err.message}`,
+          type: 'error'
+        };
+      },
+    });
   }
 }

@@ -1,0 +1,46 @@
+<div class="auth-container">
+  <div class="left-panel">
+    <img src="assets/images/logo.png" alt="Logo" class="logo" />
+    <h1>Perpustakaan</h1>
+    <h2>SD Negeri Gejayan</h2>
+    <button class="language-selector">
+      <img src="assets/icons/twemoji_flag-indonesia.svg" alt="Bahasa" />
+      <span>Bahasa</span>
+    </button>
+  </div>
+  <div class="right-panel">
+    <h3>Masuk Akun</h3>
+
+    @if (successMessage) {
+    <p class="success-message">{{ successMessage }}</p>
+    }
+
+    <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <input type="text" placeholder="Nama/NISN" formControlName="nisn" />
+      </div>
+      <div class="form-field">
+        <input
+          type="password"
+          placeholder="Password"
+          formControlName="password"
+        />
+      </div>
+
+      @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      }
+
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="isLoading || loginForm.invalid"
+      >
+        Masuk
+      </button>
+    </form>
+    <div class="form-footer">
+      <span>Belum memiliki akun? </span><a routerLink="/register">Daftar</a>
+    </div>
+  </div>
+</div>

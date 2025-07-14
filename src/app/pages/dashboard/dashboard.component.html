@@ -1,0 +1,67 @@
+<div class="dashboard-page">
+  @if (user$ | async; as user) {
+  <h1>Selamat Datang, {{ user.nama }}!</h1>
+  <p class="sub-header">Kelola buku pinjaman dan lihat riwayat Anda di sini.</p>
+
+  <section class="dashboard-section">
+    <h2>Buku yang Sedang Dipinjam</h2>
+    @if (peminjamanAktif$ | async; as peminjaman) { @if (peminjaman.length > 0)
+    {
+    <div class="book-list">
+      @for (item of peminjaman; track item.book.id) {
+      <div class="book-item">
+        <img
+          [src]="item.book.coverImageUrl"
+          [alt]="item.book.title"
+          class="book-cover"
+        />
+        <div class="book-info">
+          <h3>{{ item.book.title }}</h3>
+          <p>Oleh {{ item.book.author }}</p>
+          <p class="due-date">
+            Batas Pengembalian:
+            <strong>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</strong>
+          </p>
+        </div>
+        <button (click)="onKembalikanBuku(item)" class="action-btn">
+          Kembalikan
+        </button>
+      </div>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">Anda sedang tidak meminjam buku.</p>
+    } }
+  </section>
+
+  <section class="dashboard-section">
+    <h2>Riwayat Peminjaman</h2>
+    @if (riwayatPeminjaman$ | async; as riwayat) { @if (riwayat.length > 0) {
+    <div class="book-list history">
+      @for (item of riwayat; track item.book.id) {
+      <div class="book-item">
+        <img
+          [src]="item.book.coverImageUrl"
+          [alt]="item.book.title"
+          class="book-cover"
+        />
+        <div class="book-info">
+          <h3>{{ item.book.title }}</h3>
+          <p>Oleh {{ item.book.author }}</p>
+          <p class="return-date">
+            Dikembalikan pada:
+            {{ item.tanggalDikembalikan | date : "d MMMM yyyy" }}
+          </p>
+        </div>
+      </div>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">Anda belum memiliki riwayat peminjaman.</p>
+    } }
+  </section>
+
+  } @else {
+  <p>Loading data pengguna...</p>
+  }
+</div>

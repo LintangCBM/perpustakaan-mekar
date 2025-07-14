@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './shared/guards/auth-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'beranda', pathMatch: 'full' },
@@ -43,5 +44,35 @@ export const routes: Routes = [
       import('./pages/info-detail/info-detail.component').then(
         (m) => m.InfoDetailComponent
       ),
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./pages/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'register',
+    loadComponent: () =>
+      import('./pages/register/register.component').then(
+        (m) => m.RegisterComponent
+      ),
+  },
+  {
+    path: 'akun',
+    loadComponent: () =>
+      import('./pages/dashboard/dashboard.component').then(
+        (m) => m.DashboardComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'peminjaman',
+    redirectTo: 'akun',
+    pathMatch: 'full',
+  },
+  {
+    path: 'pengembalian',
+    redirectTo: 'akun',
+    pathMatch: 'full',
   },
 ];

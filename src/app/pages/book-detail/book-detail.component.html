@@ -23,7 +23,9 @@
         >
       </div>
       <div class="actions">
-        <button class="action-button borrow">Pinjam Buku</button>
+        <button class="action-button borrow" (click)="onPinjamBuku(book)">
+          Pinjam Buku
+        </button>
         <button
           class="action-button favorite"
           (click)="handleFavoriteToggled($event, book)"
@@ -44,6 +46,11 @@
           } {{ book.isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit" }}
         </button>
       </div>
+      @if (borrowingFeedback) {
+      <div class="feedback-message" [ngClass]="borrowingFeedback.type">
+        {{ borrowingFeedback.message }}
+      </div>
+      }
       <div class="description-section">
         <h2>Deskripsi</h2>
         @if (book.description) {
