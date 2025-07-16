@@ -5,6 +5,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { User } from '../../../models/user.model';
 import { AsyncPipe } from '@angular/common';
+import { UserRole } from '../../../models/user-role.enum';
 
 @Component({
   selector: 'app-header',
@@ -19,6 +20,7 @@ export class HeaderComponent {
 
   logoUrl = 'assets/images/logo.png';
   user$: Observable<User | null> = this.authService.currentUser;
+  readonly UserRole = UserRole;
 
   onSearchSubmit(event: Event, searchInput: HTMLInputElement): void {
     event.preventDefault();

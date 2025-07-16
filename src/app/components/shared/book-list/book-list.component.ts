@@ -46,7 +46,7 @@ export class BookListComponent implements OnChanges {
   }
 
   handleFavoriteToggled(bookId: string | number): void {
-    this.bookService.toggleFavorite(bookId);
+    this.bookService.requestToggleFavorite(bookId);
   }
 
   toggleCategory(category: string): void {

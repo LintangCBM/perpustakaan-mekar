@@ -31,6 +31,6 @@ export class BerandaComponent {
   }
 
   handleFavoriteToggled(bookId: string | number): void {
-    this.bookService.toggleFavorite(bookId);
+    this.bookService.requestToggleFavorite(bookId);
   }
 }

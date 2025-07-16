@@ -46,7 +46,7 @@ export class BookDetailComponent {
 
   handleFavoriteToggled(event: MouseEvent, book: Book): void {
     event.stopPropagation();
-    this.bookService.toggleFavorite(book.id);
+    this.bookService.requestToggleFavorite(book.id);
   }
 
   onPinjamBuku(book: Book): void {

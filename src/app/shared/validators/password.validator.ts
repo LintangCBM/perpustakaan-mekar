@@ -6,14 +6,9 @@ export function passwordsMatchValidator(
   const password = control.get('password');
   const konfirmasiPassword = control.get('konfirmasiPassword');
 
-  if (password?.value !== konfirmasiPassword?.value) {
-    konfirmasiPassword?.setErrors({ passwordsMismatch: true });
-    return { passwordsMismatch: true };
-  } else {
-    if (konfirmasiPassword?.hasError('passwordsMismatch')) {
-      konfirmasiPassword.setErrors(null);
-    }
-  }
-
-  return null;
+  const areMismatching =
+    password &&
+    konfirmasiPassword &&
+    password.value !== konfirmasiPassword.value;
+  return areMismatching ? { passwordsMismatch: true } : null;
 }

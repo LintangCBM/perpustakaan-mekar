@@ -6,6 +6,7 @@
       <h2 class="school-title-sub">SD Negeri Gejayan</h2>
     </div>
   </div>
+
   <div class="header-center">
     <form class="search-bar" (ngSubmit)="onSearchSubmit($event, searchInput)">
       <button type="submit" class="search-button" title="Cari">
@@ -22,25 +23,32 @@
       />
     </form>
   </div>
+
   <div class="header-right">
     @if (user$ | async; as user) {
-    <span class="welcome-text">Halo, {{ user.nama }}</span>
-    <button class="header-button" routerLink="/akun" title="Akun Saya">
+    <a
+      class="header-button user-display-button"
+      routerLink="/akun"
+      title="Akun Anda"
+    >
       <img
         src="assets/icons/mdi_user-outline.svg"
         alt="User"
         class="icon icon-img"
       />
-      <span class="button-text">Akun Saya</span>
-    </button>
-    <button
-      class="header-button logout-btn"
-      (click)="onLogout()"
-      title="Keluar"
-    >
+      <span class="button-text">{{ user.nama }}</span>
+    </a>
+
+    <button class="header-button" (click)="onLogout()" title="Keluar">
+      <img
+        src="assets/icons/material-symbols_logout-rounded.svg"
+        alt="Keluar"
+        class="icon icon-img"
+      />
       <span class="button-text">Keluar</span>
     </button>
     } @else {
+
     <button class="header-button" routerLink="/login" title="Masuk">
       <img
         src="assets/icons/mdi_user-outline.svg"
@@ -48,14 +56,6 @@
         class="icon icon-img"
       />
       <span class="button-text">Masuk</span>
-    </button>
-    <button class="header-button" title="Bahasa">
-      <img
-        src="assets/icons/twemoji_flag-indonesia.svg"
-        alt="Bahasa"
-        class="icon icon-img"
-      />
-      <span class="button-text">Bahasa</span>
     </button>
     }
   </div>

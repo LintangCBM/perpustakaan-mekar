@@ -1,14 +1,14 @@
 <aside class="app-sidebar">
   <nav>
     <ul>
-      @for (item of navItems; track item.route) {
+      @for (item of (navItems$ | async); track item.route) {
       <li>
         <a
           [routerLink]="item.route"
           routerLinkActive="active-link"
           [title]="item.label"
         >
-          <img [src]="item.iconSrc" [alt]="item.iconAlt" class="nav-icon-img" />
+          <img [src]="item.iconSrc" class="nav-icon-img" />
           <span class="nav-label">{{ item.label }}</span>
         </a>
       </li>
