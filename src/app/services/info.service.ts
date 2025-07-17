@@ -36,7 +36,7 @@ export class InfoService {
       slug: 'aturan',
       title: 'Aturan & Tata Tertib Perpustakaan',
       body: [
-        { type: 'h3', content: 'Kewajiban Pengunjung' },
+        {  type: 'h3', content: 'Kewajiban Pengunjung' },
         {
           type: 'ul',
           content: [
