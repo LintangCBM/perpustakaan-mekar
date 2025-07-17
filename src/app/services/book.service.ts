@@ -1,11 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { Book } from '../models/book.model';
+import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BookService {
+  private authService = inject(AuthService);
+  private router = inject(Router);
   private books$ = new BehaviorSubject<Book[]>(
     [
       {
@@ -185,7 +189,16 @@ export class BookService {
     );
   }
 
-  toggleFavorite(bookId: string | number): void {
+  requestToggleFavorite(bookId: string | number): void {
+    const currentUser = this.authService.currentUserValue;
+    if (currentUser) {
+      this.toggleFavorite(bookId);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  private toggleFavorite(bookId: string | number): void {
     const currentBooks = this.books$.getValue();
     const updatedBooks = currentBooks.map((book) => {
       if (book.id !== bookId) {

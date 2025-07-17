@@ -3,12 +3,12 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #FFB4B4, #FFE8E8);
+  background: radial-gradient(#ffb4b4, #ffe8e8);
 }
 
 .auth-container {
   display: flex;
-  background-color: #FFF9F9;
+  background-color: #fff9f9;
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -16,7 +16,8 @@
   overflow: hidden;
 }
 
-.left-panel, .right-panel {
+.left-panel,
+.right-panel {
   padding: 40px;
   flex: 1;
 }
@@ -46,17 +47,6 @@
     font-size: 1em;
     font-weight: 400;
     color: var(--secondary-text-color);
-  }
-
-  .language-selector {
-    margin-top: 30px;
-    padding: 8px 15px;
-    border: 1px solid var(--border-color);
-    border-radius: var(--border-radius);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
   }
 }
 

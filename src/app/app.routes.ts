@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
+import { adminGuard } from './shared/guards/admin-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'beranda', pathMatch: 'full' },
@@ -66,13 +67,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'peminjaman',
-    redirectTo: 'akun',
-    pathMatch: 'full',
-  },
-  {
-    path: 'pengembalian',
-    redirectTo: 'akun',
-    pathMatch: 'full',
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.component').then(
+        (m) => m.AdminDashboardComponent
+      ),
+    canActivate: [authGuard, adminGuard],
   },
 ];

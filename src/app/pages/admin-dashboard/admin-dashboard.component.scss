@@ -1,0 +1,47 @@
+:host {
+  display: block;
+}
+
+.admin-dashboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+p {
+  text-align: center;
+  margin-top: -20px;
+  color: var(--secondary-text-color);
+  margin-bottom: 40px;
+}
+
+.admin-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.action-card {
+  background-color: var(--content-bg-color);
+  padding: 25px;
+  border-radius: var(--border-radius);
+  text-align: center;
+  box-shadow: var(--card-shadow);
+
+  h3 {
+    margin-top: 0;
+  }
+  
+  button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+  }
+}

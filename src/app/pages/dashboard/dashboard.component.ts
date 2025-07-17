@@ -2,13 +2,12 @@ import { Component, inject } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { PeminjamanService } from '../../services/peminjaman.service';
-import { Observable, filter, switchMap, tap } from 'rxjs';
+import { Observable, filter, switchMap } from 'rxjs';
 import { User } from '../../models/user.model';
 import {
   PeminjamanAktif,
   RiwayatPeminjaman,
 } from '../../models/peminjaman.model';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',

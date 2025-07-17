@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, map, of, throwError, Subscription } from 'rxjs';
 import { PeminjamanAktif, RiwayatPeminjaman } from '../models/peminjaman.model';
 import { Book } from '../models/book.model';
 import { User } from '../models/user.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,16 @@ export class PeminjamanService {
   private riwayatPeminjaman$ = new BehaviorSubject<
     Map<number, RiwayatPeminjaman[]>
   >(new Map());
+
+  private authService = inject(AuthService);
+  private logoutSubscription: Subscription;
+
+  constructor() {
+    this.logoutSubscription = this.authService.onLogout.subscribe(() => {
+      this.peminjamanAktif$.next(new Map());
+      this.riwayatPeminjaman$.next(new Map());
+    });
+  }
 
   getBukuDipinjam(userId: number): Observable<PeminjamanAktif[]> {
     return this.peminjamanAktif$.pipe(
@@ -72,5 +83,9 @@ export class PeminjamanService {
     };
     petaRiwayatBaru.set(user.id, [...userRiwayat, recordRiwayat]);
     this.riwayatPeminjaman$.next(petaRiwayatBaru);
+  }
+
+  ngOnDestroy(): void {
+    this.logoutSubscription.unsubscribe();
   }
 }
