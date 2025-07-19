@@ -12,7 +12,16 @@
     @for (block of content.body; track $index) { @switch (block.type) { @case
     ('h3') {
     <h3>{{ block.content }}</h3>
-    } @case ('p') {
+    } @case ('img') {
+    <div class="img-section">
+      <img
+        [src]="block.content"
+        alt="Image related to {{ content.title }}"
+        class="info-cover-large"
+      />
+    </div>
+    }
+    @case ('p') {
     <p>{{ block.content }}</p>
     } @case ('ol') {
     <ol>

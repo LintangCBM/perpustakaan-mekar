@@ -10,8 +10,10 @@ export class InfoService {
     {
       slug: 'pinjam-kembali',
       title: 'Cara Meminjam dan Mengembalikan Buku',
+    
       body: [
         { type: 'h3', content: 'Cara Meminjam Buku' },
+        { type: 'img', content: 'assets/images/pinjam.jpg' },
         {
           type: 'ol',
           content: [
@@ -88,6 +90,9 @@ export class InfoService {
           content:
             'Perpustakaan Mekar menyediakan berbagai fasilitas untuk mendukung kegiatan literasi pengunjung.',
         },
+        { type: 'img', content: 'assets/images/perpus.jpeg' },
+        { type: 'img', content: 'assets/images/fasilitas 1.jpeg' },
+        { type: 'img', content: 'assets/images/fasilitas 2.jpeg' },
         { type: 'h3', content: 'Fasilitas Utama' },
         {
           type: 'ul',
