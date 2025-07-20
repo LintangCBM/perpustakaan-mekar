@@ -1,14 +1,16 @@
 import { Book } from './book.model';
 
 export interface PeminjamanAktif {
-  userId: number;
+  docId: string;
+  userId: string;
   book: Book;
   tanggalPinjam: Date;
   tanggalKembali: Date;
 }
 
 export interface RiwayatPeminjaman {
-  userId: number;
+  docId: string;
+  userId: string;
   book: Book;
   tanggalPinjam: Date;
   tanggalDikembalikan: Date;

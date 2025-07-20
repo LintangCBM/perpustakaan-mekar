@@ -9,9 +9,17 @@
     <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       <div class="form-field">
         <input type="text" placeholder="Nama" formControlName="nama" />
+        @if (registerForm.get('nama')?.invalid &&
+        registerForm.get('nama')?.touched) {
+        <div class="field-error">Nama wajib diisi.</div>
+        }
       </div>
       <div class="form-field">
         <input type="text" placeholder="NISN" formControlName="nisn" />
+        @if (registerForm.get('nisn')?.invalid &&
+        registerForm.get('nisn')?.touched) {
+        <div class="field-error">NISN wajib diisi.</div>
+        }
       </div>
       <div class="form-field">
         <input
@@ -19,6 +27,13 @@
           placeholder="Password"
           formControlName="password"
         />
+        @if (registerForm.get('password')?.hasError('required') &&
+        registerForm.get('password')?.touched) {
+        <div class="field-error">Password wajib diisi.</div>
+        } @if (registerForm.get('password')?.hasError('minlength') &&
+        registerForm.get('password')?.touched) {
+        <div class="field-error">Password minimal 6 karakter.</div>
+        }
       </div>
       <div class="form-field">
         <input
@@ -26,6 +41,10 @@
           placeholder="Konfirmasi Password"
           formControlName="konfirmasiPassword"
         />
+        @if (registerForm.hasError('passwordsMismatch') &&
+        registerForm.get('konfirmasiPassword')?.touched) {
+        <div class="field-error">Password tidak cocok.</div>
+        }
       </div>
 
       @if (errorMessage) {

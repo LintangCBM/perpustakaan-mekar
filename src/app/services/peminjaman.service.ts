@@ -1,91 +1,114 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, of, throwError, Subscription } from 'rxjs';
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PeminjamanAktif, RiwayatPeminjaman } from '../models/peminjaman.model';
 import { Book } from '../models/book.model';
 import { User } from '../models/user.model';
 import { AuthService } from './auth.service';
 
+import {
+  Firestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  doc,
+  updateDoc,
+  serverTimestamp,
+} from '@angular/fire/firestore';
+
+interface PeminjamanDoc {
+  userId: string;
+  bookId: string;
+  book: Book;
+  status: 'dipinjam' | 'dikembalikan';
+  tanggalPinjam: any;
+  tanggalDikembalikan?: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class PeminjamanService {
-  private peminjamanAktif$ = new BehaviorSubject<
-    Map<number, PeminjamanAktif[]>
-  >(new Map());
-  private riwayatPeminjaman$ = new BehaviorSubject<
-    Map<number, RiwayatPeminjaman[]>
-  >(new Map());
+  private firestore: Firestore = inject(Firestore);
+  private authService: AuthService = inject(AuthService);
+  private peminjamanCollection = collection(this.firestore, 'peminjaman');
 
-  private authService = inject(AuthService);
-  private logoutSubscription: Subscription;
-
-  constructor() {
-    this.logoutSubscription = this.authService.onLogout.subscribe(() => {
-      this.peminjamanAktif$.next(new Map());
-      this.riwayatPeminjaman$.next(new Map());
-    });
-  }
-
-  getBukuDipinjam(userId: number): Observable<PeminjamanAktif[]> {
-    return this.peminjamanAktif$.pipe(
-      map((petaPeminjaman) => petaPeminjaman.get(userId) || [])
+  getBukuDipinjam(userId: string): Observable<PeminjamanAktif[]> {
+    const q = query(
+      this.peminjamanCollection,
+      where('userId', '==', userId),
+      where('status', '==', 'dipinjam')
+    );
+    return from(getDocs(q)).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((doc) => {
+          const data = doc.data() as PeminjamanDoc;
+          return {
+            docId: doc.id,
+            userId: data.userId,
+            book: data.book,
+            tanggalPinjam: data.tanggalPinjam.toDate(),
+            tanggalKembali: new Date(
+              data.tanggalPinjam.toDate().getTime() + 14 * 24 * 60 * 60 * 1000
+            ),
+          };
+        })
+      )
     );
   }
 
-  getRiwayatPeminjaman(userId: number): Observable<RiwayatPeminjaman[]> {
-    return this.riwayatPeminjaman$.pipe(
-      map((petaRiwayat) => petaRiwayat.get(userId) || [])
+  getRiwayatPeminjaman(userId: string): Observable<RiwayatPeminjaman[]> {
+    const q = query(
+      this.peminjamanCollection,
+      where('userId', '==', userId),
+      where('status', '==', 'dikembalikan')
+    );
+    return from(getDocs(q)).pipe(
+      map((snapshot) =>
+        snapshot.docs.map((doc) => {
+          const data = doc.data() as PeminjamanDoc;
+          return {
+            docId: doc.id,
+            userId: data.userId,
+            book: data.book,
+            tanggalPinjam: data.tanggalPinjam.toDate(),
+            tanggalDikembalikan: data.tanggalDikembalikan.toDate(),
+          };
+        })
+      )
     );
   }
 
-  pinjamBuku(user: User, book: Book): Observable<PeminjamanAktif> {
-    const petaPeminjamanSaatIni = this.peminjamanAktif$.getValue();
-    const userPeminjaman = petaPeminjamanSaatIni.get(user.id) || [];
+  async pinjamBuku(user: User, book: Book): Promise<void> {
+    const q = query(
+      this.peminjamanCollection,
+      where("userId", "==", user.uid),
+      where("bookId", "==", book.id),
+      where("status", "==", "dipinjam")
+    );
 
-    if (userPeminjaman.some((p) => p.book.id === book.id)) {
-      return throwError(() => new Error('Anda sudah meminjam buku ini.'));
+    const existingLoanSnapshot = await getDocs(q);
+    if (!existingLoanSnapshot.empty) {
+      throw new Error('Anda sudah meminjam buku ini.');
     }
 
-    const record: PeminjamanAktif = {
-      userId: user.id,
+    const newPeminjaman: Omit<PeminjamanDoc, 'tanggalDikembalikan'> = {
+      userId: user.uid,
+      bookId: book.id,
       book,
-      tanggalPinjam: new Date(),
-      tanggalKembali: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+      status: 'dipinjam',
+      tanggalPinjam: serverTimestamp()
     };
-
-    const petaPeminjamanBaru = new Map(petaPeminjamanSaatIni);
-    petaPeminjamanBaru.set(user.id, [...userPeminjaman, record]);
-    this.peminjamanAktif$.next(petaPeminjamanBaru);
-
-    return new Observable((subscriber) => subscriber.next(record));
+    await addDoc(this.peminjamanCollection, newPeminjaman);
   }
 
-  kembalikanBuku(user: User, peminjaman: PeminjamanAktif): void {
-    const petaPeminjamanAktifSaatIni = this.peminjamanAktif$.getValue();
-    const petaPeminjamanAktifBaru = new Map(petaPeminjamanAktifSaatIni);
-    const userPeminjamanAktif = petaPeminjamanAktifBaru.get(user.id) || [];
-
-    const peminjamanDiperbarui = userPeminjamanAktif.filter(
-      (p) => p.book.id !== peminjaman.book.id
-    );
-    petaPeminjamanAktifBaru.set(user.id, peminjamanDiperbarui);
-    this.peminjamanAktif$.next(petaPeminjamanAktifBaru);
-
-    const petaRiwayatSaatIni = this.riwayatPeminjaman$.getValue();
-    const petaRiwayatBaru = new Map(petaRiwayatSaatIni);
-    const userRiwayat = petaRiwayatBaru.get(user.id) || [];
-
-    const recordRiwayat: RiwayatPeminjaman = {
-      userId: user.id,
-      book: peminjaman.book,
-      tanggalPinjam: peminjaman.tanggalPinjam,
-      tanggalDikembalikan: new Date(),
-    };
-    petaRiwayatBaru.set(user.id, [...userRiwayat, recordRiwayat]);
-    this.riwayatPeminjaman$.next(petaRiwayatBaru);
-  }
-
-  ngOnDestroy(): void {
-    this.logoutSubscription.unsubscribe();
+  async kembalikanBuku(peminjaman: PeminjamanAktif): Promise<void> {
+    const docRef = doc(this.firestore, `peminjaman/${peminjaman.docId}`);
+    await updateDoc(docRef, {
+      status: 'dikembalikan',
+      tanggalDikembalikan: serverTimestamp(),
+    });
   }
 }

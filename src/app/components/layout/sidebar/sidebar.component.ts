@@ -24,8 +24,8 @@ export class SidebarComponent {
   readonly navItems$: Observable<NavItem[]>;
 
   constructor() {
-    this.navItems$ = this.authService.currentUser.pipe(
-      map(user => this._buildNavItemsForUser(user))
+    this.navItems$ = this.authService.currentUser$.pipe(
+      map((user) => this._buildNavItemsForUser(user))
     );
   }
 
@@ -46,24 +46,48 @@ export class SidebarComponent {
 
   private _getGuestNavItems(): NavItem[] {
     return [
-      { label: 'Beranda', iconSrc: 'assets/icons/material-symbols_home-rounded.svg', route: '/beranda' },
-      { label: 'Daftar Buku', iconSrc: 'assets/icons/mdi_book-search.svg', route: '/daftar-buku' },
-      { label: 'Informasi', iconSrc: 'assets/icons/mdi_book-alert.svg', route: '/informasi' },
+      {
+        label: 'Beranda',
+        iconSrc: 'assets/icons/material-symbols_home-rounded.svg',
+        route: '/beranda',
+      },
+      {
+        label: 'Daftar Buku',
+        iconSrc: 'assets/icons/mdi_book-search.svg',
+        route: '/daftar-buku',
+      },
+      {
+        label: 'Informasi',
+        iconSrc: 'assets/icons/mdi_book-alert.svg',
+        route: '/informasi',
+      },
     ];
   }
 
   private _getStudentNavItems(): NavItem[] {
     return [
-      ...this._getGuestNavItems(), 
-      { label: 'Favorit', iconSrc: 'assets/icons/mdi_book-heart.svg', route: '/favorit' },
-      { label: 'Status Peminjaman', iconSrc: 'assets/icons/mdi_book-sync.svg', route: '/akun' },
+      ...this._getGuestNavItems(),
+      {
+        label: 'Favorit',
+        iconSrc: 'assets/icons/mdi_book-heart.svg',
+        route: '/favorit',
+      },
+      {
+        label: 'Status Peminjaman',
+        iconSrc: 'assets/icons/mdi_book-sync.svg',
+        route: '/akun',
+      },
     ];
   }
 
   private _getStaffNavItems(): NavItem[] {
     return [
       ...this._getStudentNavItems(),
-      { label: 'Panel Admin', iconSrc: 'assets/icons/mdi_book-account.svg', route: '/admin' },
+      {
+        label: 'Panel Admin',
+        iconSrc: 'assets/icons/mdi_book-account.svg',
+        route: '/admin',
+      },
     ];
   }
 }

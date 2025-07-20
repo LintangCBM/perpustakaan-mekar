@@ -7,6 +7,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { UserRole } from '../../models/user-role.enum';
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+  private returnUrl: string | null = null;
 
   loginForm: FormGroup = this.fb.group({
     nisn: ['', Validators.required],
@@ -35,10 +37,11 @@ export class LoginComponent implements OnInit {
       if (params.get('registered') === 'true') {
         this.successMessage = 'Pendaftaran berhasil! Silakan masuk.';
       }
+      this.returnUrl = params.get('returnUrl');
     });
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.loginForm.invalid) return;
 
     this.isLoading = true;
@@ -46,14 +49,21 @@ export class LoginComponent implements OnInit {
     this.successMessage = null;
     const { nisn, password } = this.loginForm.value;
 
-    this.authService.login(nisn, password).subscribe({
-      next: () => {
-        this.router.navigate(['/akun']);
-      },
-      error: (err) => {
-        this.errorMessage = err.message;
-        this.isLoading = false;
-      },
-    });
+    try {
+      const user = await this.authService.login(nisn, password);
+      if (this.returnUrl) {
+        this.router.navigateByUrl(this.returnUrl);
+      } else {
+        if (user.role === UserRole.Staff) {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/akun']);
+        }
+      }
+    } catch (err: any) {
+      this.errorMessage = err.message || 'Login gagal. Silakan coba lagi.';
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
