@@ -1,12 +1,12 @@
 <div class="daftar-buku-page">
-  @if (searchQuery$ | async; as query) {
   <div class="search-info">
-    @if (query) {
+    @if (searchQuery$ | async; as query) { @if (query) {
     <h1 class="page-title">Hasil pencarian untuk : "{{ query }}"</h1>
     } @else {
     <h1 class="page-title">Daftar Buku</h1>
+    } } @else {
+    <h1 class="page-title">Daftar Buku</h1>
     }
   </div>
-  }
   <app-book-list [books]="(books$ | async) || []"></app-book-list>
 </div>

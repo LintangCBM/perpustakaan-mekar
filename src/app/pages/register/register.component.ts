@@ -46,7 +46,7 @@ export class RegisterComponent {
 
     try {
       await this.authService.register(nama, nisn, password);
-      this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
+      this.router.navigate(['/akun']);
     } catch (err: any) {
       this.errorMessage =
         err.message || 'Pendaftaran gagal. Silakan coba lagi.';
