@@ -77,7 +77,7 @@ export class SidebarComponent {
         iconSrc: 'assets/icons/mdi_book-sync.svg',
         route: '/akun',
       },
-    ];
+    ].sort((a, b) => this._getSortOrder(a.route) - this._getSortOrder(b.route));
   }
 
   private _getStaffNavItems(): NavItem[] {
@@ -88,6 +88,12 @@ export class SidebarComponent {
         iconSrc: 'assets/icons/mdi_book-account.svg',
         route: '/admin',
       },
-    ];
+    ].sort((a, b) => this._getSortOrder(a.route) - this._getSortOrder(b.route));
+  }
+
+   private _getSortOrder(route: string): number {
+    const order = ['/beranda', '/daftar-buku', '/favorit', '/akun', '/admin', '/informasi'];
+    const index = order.indexOf(route);
+    return index === -1 ? 99 : index;
   }
 }

@@ -74,4 +74,28 @@ export const routes: Routes = [
       ),
     canActivate: [authGuard, adminGuard],
   },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.component').then(
+        (m) => m.AdminDashboardComponent
+      ),
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/books',
+    loadComponent: () =>
+      import(
+        './pages/admin-book-management/admin-book-management.component'
+      ).then((m) => m.AdminBookManagementComponent),
+    canActivate: [authGuard, adminGuard],
+  },
+  {
+    path: 'admin/peminjaman',
+    loadComponent: () =>
+      import(
+        './pages/admin-peminjaman-management/admin-peminjaman-management.component'
+      ).then((m) => m.AdminPeminjamanManagementComponent),
+    canActivate: [authGuard, adminGuard],
+  },
 ];

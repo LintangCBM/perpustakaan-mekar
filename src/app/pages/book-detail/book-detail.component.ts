@@ -62,10 +62,10 @@ export class BookDetailComponent {
     try {
       await this.peminjamanService.pinjamBuku(currentUser, book);
       this.borrowingFeedback = {
-        message: `Buku "${book.title}" berhasil dipinjam! Anda akan dialihkan...`,
+        message: `Permintaan untuk meminjam "${book.title}" telah terkirim! Silakan tunggu persetujuan staf.`,
         type: 'success',
       };
-      setTimeout(() => this.router.navigate(['/akun']), 2000);
+      setTimeout(() => this.router.navigate(['/akun']), 3000);
     } catch (err: any) {
       this.borrowingFeedback = {
         message: `Gagal meminjam buku: ${err.message}`,

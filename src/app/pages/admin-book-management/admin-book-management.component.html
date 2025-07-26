@@ -1,0 +1,122 @@
+<div class="management-page">
+  <header class="page-header">
+    <div class="header-left">
+      <a routerLink="/admin" class="back-button">← Kembali</a>
+      <h1>Manajemen Buku</h1>
+    </div>
+    <button class="add-btn" (click)="openAddModal()">+ Tambah Buku</button>
+  </header>
+
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Cari berdasarkan judul atau penulis..."
+      class="search-input"
+      [value]="searchTerm"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Cover</th>
+          <th>Judul</th>
+          <th>Penulis</th>
+          <th>Kategori</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isLoading) {
+        <tr>
+          <td colspan="5" class="empty-state">Memuat data buku...</td>
+        </tr>
+        } @else { @for (book of paginatedBooks; track book.id) {
+        <tr>
+          <td>
+            <img
+              [src]="
+                book.coverImageUrl ||
+                'https://placehold.co/40x60/EEE/333?text=N/A'
+              "
+              [alt]="book.title"
+              class="book-cover-thumb"
+            />
+          </td>
+          <td>{{ book.title }}</td>
+          <td>{{ book.author }}</td>
+          <td>{{ book.categories.join(", ") }}</td>
+          <td>
+            <div class="action-cell">
+              <button class="action-btn edit-btn" (click)="openEditModal(book)">
+                Edit
+              </button>
+              <button class="action-btn delete-btn" (click)="onDelete(book.id)">
+                Hapus
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @if (paginatedBooks.length === 0) {
+        <tr>
+          <td colspan="5" class="empty-state">
+            Tidak ada buku yang cocok dengan kriteria Anda.
+          </td>
+        </tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-footer">
+    <app-pagination
+      [totalItems]="totalItems"
+      [currentPage]="currentPage"
+      [itemsPerPage]="itemsPerPage"
+      (pageChanged)="onPageChanged($event)"
+    ></app-pagination>
+  </div>
+</div>
+
+@if (isModalOpen) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>{{ editingBookId ? "Edit Buku" : "Tambah Buku Baru" }}</h3>
+    <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="title">Judul</label>
+        <input id="title" type="text" formControlName="title" />
+      </div>
+      <div class="form-field">
+        <label for="author">Penulis</label>
+        <input id="author" type="text" formControlName="author" />
+      </div>
+      <div class="form-field">
+        <label for="categories">Kategori (pisahkan dengan koma)</label>
+        <input id="categories" type="text" formControlName="categories" />
+      </div>
+      <div class="form-field">
+        <label for="description">Deskripsi</label>
+        <textarea
+          id="description"
+          formControlName="description"
+          rows="4"
+        ></textarea>
+      </div>
+      <div class="form-field">
+        <label for="coverImageUrl">URL Gambar Cover (Opsional)</label>
+        <input id="coverImageUrl" type="text" formControlName="coverImageUrl" />
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeModal()">
+          Batal
+        </button>
+        <button type="submit" class="save-btn" [disabled]="bookForm.invalid">
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

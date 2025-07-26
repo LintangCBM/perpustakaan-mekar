@@ -1,0 +1,117 @@
+<div class="management-page">
+  <header class="page-header">
+    <div class="header-left">
+      <a routerLink="/admin" class="back-button">← Kembali</a>
+      <h1>Manajemen Peminjaman</h1>
+    </div>
+  </header>
+
+  <div class="tab-container">
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'permintaan'"
+      (click)="setActiveTab('permintaan')"
+    >
+      Permintaan Baru
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'aktif'"
+      (click)="setActiveTab('aktif')"
+    >
+      Sedang Dipinjam
+    </button>
+  </div>
+
+  <div class="table-container">
+    <!-- Permintaan (Requests) Tab -->
+    @if (activeTab === 'permintaan') {
+    <table>
+      <thead>
+        <tr>
+          <th>Judul Buku</th>
+          <th>Nama Peminjam</th>
+          <th>Tanggal Permintaan</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (permintaan$ | async; as permintaan) { @for (item of permintaan;
+        track item.docId) {
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>{{ item.userName }}</td>
+          <td>{{ item.tanggalPermintaan | date : "d MMM yyyy, HH:mm" }}</td>
+          <td class="action-cell">
+            <button
+              class="action-btn approve-btn"
+              (click)="onApprove(item.docId)"
+            >
+              Setujui
+            </button>
+            <button
+              class="action-btn reject-btn"
+              (click)="onReject(item.docId)"
+            >
+              Tolak
+            </button>
+          </td>
+        </tr>
+        } @if (permintaan.length === 0) {
+        <tr>
+          <td colspan="4" class="empty-state">
+            Tidak ada permintaan peminjaman baru.
+          </td>
+        </tr>
+        } } @else {
+        <tr>
+          <td colspan="4" class="empty-state">Memuat data...</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    }
+
+    <!-- Peminjaman Aktif (Active Loans) Tab -->
+    @if (activeTab === 'aktif') {
+    <table>
+      <thead>
+        <tr>
+          <th>Judul Buku</th>
+          <th>Nama Peminjam</th>
+          <th>Batas Pengembalian</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (peminjamanAktif$ | async; as peminjaman) { @for (item of
+        peminjaman; track item.docId) {
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>{{ item.userName }}</td>
+          <td>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</td>
+          <td class="action-cell">
+            <button
+              class="action-btn return-btn"
+              (click)="onReturn(item.docId)"
+            >
+              Tandai Kembali
+            </button>
+          </td>
+        </tr>
+        } @if (peminjaman.length === 0) {
+        <tr>
+          <td colspan="4" class="empty-state">
+            Tidak ada buku yang sedang dipinjam.
+          </td>
+        </tr>
+        } } @else {
+        <tr>
+          <td colspan="4" class="empty-state">Memuat data...</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    }
+  </div>
+</div>

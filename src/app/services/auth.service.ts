@@ -36,11 +36,22 @@ export class AuthService {
       }
       const userDocRef = doc(this.firestore, `users/${firebaseUser.uid}`);
       return from(getDoc(userDocRef)).pipe(
-        map((docSnap) => docSnap.data() as User)
+        map((docSnap) => {
+          if (!docSnap.exists()) {
+            console.error(
+              `User document not found for uid: ${firebaseUser.uid}`
+            );
+            return null;
+          }
+          return docSnap.data() as User;
+        }),
+        catchError((error) => {
+          console.error('Error fetching user document:', error);
+          return of(null);
+        })
       );
     })
   );
-  onLogout: any;
 
   private formatEmail(nisn: string): string {
     return `${nisn}@sdngejayan.edu`;
@@ -54,24 +65,14 @@ export class AuthService {
       password
     );
 
-    const userCount =
-      (await getDoc(doc(this.firestore, 'meta/user-count'))).data()?.[
-        'count'
-      ] || 0;
-    const role = userCount === 0 ? UserRole.Staff : UserRole.Student;
-
     const newUser: User = {
       uid: userCredential.user.uid,
       nama,
       nisn,
-      role,
+      role: UserRole.Student,
     };
 
     await setDoc(doc(this.firestore, `users/${newUser.uid}`), newUser);
-    await setDoc(doc(this.firestore, 'meta/user-count'), {
-      count: userCount + 1,
-    });
-
     return newUser;
   }
 
@@ -101,5 +102,11 @@ export class AuthService {
 
   getCurrentUser(): Promise<User | null> {
     return firstValueFrom(this.currentUser$);
+  }
+
+  async getUserById(uid: string): Promise<User | null> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    const docSnap = await getDoc(userDocRef);
+    return docSnap.exists() ? (docSnap.data() as User) : null;
   }
 }
