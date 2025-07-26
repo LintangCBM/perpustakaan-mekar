@@ -34,7 +34,7 @@ export class RegisterComponent {
     { validators: passwordsMatchValidator }
   );
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
@@ -44,16 +44,14 @@ export class RegisterComponent {
     this.errorMessage = null;
     const { nama, nisn, password } = this.registerForm.value;
 
-    this.authService.register(nama, nisn, password).subscribe({
-      next: () => {
-        this.router.navigate(['/login'], {
-          queryParams: { registered: 'true' },
-        });
-      },
-      error: (err) => {
-        this.errorMessage = err.message;
-        this.isLoading = false;
-      },
-    });
+    try {
+      await this.authService.register(nama, nisn, password);
+      this.router.navigate(['/login'], { queryParams: { registered: 'true' } });
+    } catch (err: any) {
+      this.errorMessage =
+        err.message || 'Pendaftaran gagal. Silakan coba lagi.';
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

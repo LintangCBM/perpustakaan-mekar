@@ -42,10 +42,13 @@ export class BookListComponent implements OnChanges {
     this.masterBookList.forEach((book) => {
       (book.categories || []).forEach((cat) => allCats.add(cat));
     });
-    this.displayCategories = [this.SEMUA_CATEGORY, ...Array.from(allCats).sort()];
+    this.displayCategories = [
+      this.SEMUA_CATEGORY,
+      ...Array.from(allCats).sort(),
+    ];
   }
 
-  handleFavoriteToggled(bookId: string | number): void {
+  handleFavoriteToggled(bookId: string): void {
     this.bookService.requestToggleFavorite(bookId);
   }
 

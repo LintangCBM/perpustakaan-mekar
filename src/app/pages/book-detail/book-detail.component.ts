@@ -21,7 +21,8 @@ export class BookDetailComponent {
   private authService = inject(AuthService);
   private peminjamanService = inject(PeminjamanService);
   private router = inject(Router);
-  borrowingFeedback: { message: string, type: 'success' | 'error' } | null = null;
+  borrowingFeedback: { message: string; type: 'success' | 'error' } | null =
+    null;
 
   constructor(
     private bookService: BookService,
@@ -44,13 +45,13 @@ export class BookDetailComponent {
     this.location.back();
   }
 
-  handleFavoriteToggled(event: MouseEvent, book: Book): void {
+  async handleFavoriteToggled(event: MouseEvent, book: Book): Promise<void> {
     event.stopPropagation();
-    this.bookService.requestToggleFavorite(book.id);
+    await this.bookService.requestToggleFavorite(book.id);
   }
 
-  onPinjamBuku(book: Book): void {
-    const currentUser = this.authService.currentUserValue;
+  async onPinjamBuku(book: Book): Promise<void> {
+    const currentUser = await this.authService.getCurrentUser();
     this.borrowingFeedback = null;
 
     if (!currentUser) {
@@ -58,20 +59,19 @@ export class BookDetailComponent {
       return;
     }
 
-    this.peminjamanService.pinjamBuku(currentUser, book).subscribe({
-      next: () => {
-        this.borrowingFeedback = {
-          message: `Buku "${book.title}" berhasil dipinjam! Anda akan dialihkan...`,
-          type: 'success'
-        };
-        setTimeout(() => this.router.navigate(['/akun']), 2000);
-      },
-      error: (err) => {
-        this.borrowingFeedback = {
-          message: `Gagal meminjam buku: ${err.message}`,
-          type: 'error'
-        };
-      },
-    });
+    try {
+      await this.peminjamanService.pinjamBuku(currentUser, book);
+      this.borrowingFeedback = {
+        message: `Buku "${book.title}" berhasil dipinjam! Anda akan dialihkan...`,
+        type: 'success',
+      };
+      setTimeout(() => this.router.navigate(['/akun']), 2000);
+    } catch (err: any) {
+      this.borrowingFeedback = {
+        message: `Gagal meminjam buku: ${err.message}`,
+        type: 'error',
+      };
+      return;
+    }
   }
 }

@@ -13,7 +13,10 @@
 
     <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-field">
-        <input type="text" placeholder="Nama/NISN" formControlName="nisn" />
+        <input type="text" placeholder="NISN" formControlName="nisn" />
+        @if (loginForm.get('nisn')?.invalid && loginForm.get('nisn')?.touched) {
+        <div class="field-error">NISN wajib diisi.</div>
+        }
       </div>
       <div class="form-field">
         <input
@@ -21,6 +24,13 @@
           placeholder="Password"
           formControlName="password"
         />
+        @if (loginForm.get('password')?.invalid &&
+        loginForm.get('password')?.touched) {
+        <div class="field-error">Password wajib diisi.</div>
+        } @if (loginForm.get('password')?.hasError('minlength') &&
+        loginForm.get('password')?.touched) {
+        <div class="field-error">Password minimal 6 karakter.</div>
+        }
       </div>
 
       @if (errorMessage) {

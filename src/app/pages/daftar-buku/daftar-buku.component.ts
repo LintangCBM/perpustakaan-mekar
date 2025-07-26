@@ -23,7 +23,13 @@ export class DaftarBukuComponent {
     );
 
     this.books$ = this.searchQuery$.pipe(
-      switchMap((query) => this.bookService.searchBooks(query))
+      switchMap((query) => {
+        if (query) {
+          return this.bookService.searchBooks(query);
+        } else {
+          return this.bookService.getAllBooks();
+        }
+      })
     );
   }
 }

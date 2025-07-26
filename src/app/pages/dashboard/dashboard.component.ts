@@ -20,27 +20,19 @@ export class DashboardComponent {
   private authService = inject(AuthService);
   private peminjamanService = inject(PeminjamanService);
 
-  readonly user$: Observable<User | null> = this.authService.currentUser;
+  readonly user$: Observable<User | null> = this.authService.currentUser$;
   readonly peminjamanAktif$: Observable<PeminjamanAktif[]>;
   readonly riwayatPeminjaman$: Observable<RiwayatPeminjaman[]>;
 
   constructor() {
     this.peminjamanAktif$ = this.user$.pipe(
       filter((user): user is User => user !== null),
-      switchMap((user) => this.peminjamanService.getBukuDipinjam(user.id))
+      switchMap((user) => this.peminjamanService.getBukuDipinjam(user.uid))
     );
 
     this.riwayatPeminjaman$ = this.user$.pipe(
       filter((user): user is User => user !== null),
-      switchMap((user) => this.peminjamanService.getRiwayatPeminjaman(user.id))
+      switchMap((user) => this.peminjamanService.getRiwayatPeminjaman(user.uid))
     );
-  }
-
-  // Mock data for demonstration purposes
-  onKembalikanBuku(peminjaman: PeminjamanAktif): void {
-    const currentUser = this.authService.currentUserValue;
-    if (currentUser) {
-      this.peminjamanService.kembalikanBuku(currentUser, peminjaman);
-    }
   }
 }

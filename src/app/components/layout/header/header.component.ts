@@ -19,7 +19,7 @@ export class HeaderComponent {
   private router = inject(Router);
 
   logoUrl = 'assets/images/logo.png';
-  user$: Observable<User | null> = this.authService.currentUser;
+  user$: Observable<User | null> = this.authService.currentUser$;
   readonly UserRole = UserRole;
 
   onSearchSubmit(event: Event, searchInput: HTMLInputElement): void {

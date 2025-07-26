@@ -1,69 +1,105 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import {
+  BehaviorSubject,
+  Observable,
+  from,
+  of,
+  throwError,
+  firstValueFrom,
+} from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { User } from '../models/user.model';
-import { BehaviorSubject, Observable, of, throwError, Subject } from 'rxjs';
 import { UserRole } from '../models/user-role.enum';
+
+import {
+  Auth,
+  authState,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from '@angular/fire/auth';
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private router = inject(Router);
-  private currentUser$ = new BehaviorSubject<User | null>(null);
-  private users = new Map<string, User>();
+  private auth: Auth = inject(Auth);
+  private firestore: Firestore = inject(Firestore);
+  private router: Router = inject(Router);
 
-  public readonly currentUser = this.currentUser$.asObservable();
-  public get currentUserValue(): User | null {
-    return this.currentUser$.getValue();
+  public currentUser$: Observable<User | null> = authState(this.auth).pipe(
+    switchMap((firebaseUser) => {
+      if (!firebaseUser) {
+        return of(null);
+      }
+      const userDocRef = doc(this.firestore, `users/${firebaseUser.uid}`);
+      return from(getDoc(userDocRef)).pipe(
+        map((docSnap) => docSnap.data() as User)
+      );
+    })
+  );
+  onLogout: any;
+
+  private formatEmail(nisn: string): string {
+    return `${nisn}@sdngejayan.edu`;
   }
 
-  private logoutSignal$ = new Subject<void>();
-  public readonly onLogout = this.logoutSignal$.asObservable();
+  async register(nama: string, nisn: string, password: string): Promise<User> {
+    const email = this.formatEmail(nisn);
+    const userCredential = await createUserWithEmailAndPassword(
+      this.auth,
+      email,
+      password
+    );
 
-  register(nama: string, nisn: string, password: string): Observable<User> {
-    if (this.users.has(nisn)) {
-      return throwError(
-        () => new Error(`User with NISN "${nisn}" already exists.`)
-      );
-    }
-    const role: UserRole =
-      this.users.size === 0 ? UserRole.Staff : UserRole.Student;
+    const userCount =
+      (await getDoc(doc(this.firestore, 'meta/user-count'))).data()?.[
+        'count'
+      ] || 0;
+    const role = userCount === 0 ? UserRole.Staff : UserRole.Student;
+
     const newUser: User = {
-      id: Date.now(),
+      uid: userCredential.user.uid,
       nama,
       nisn,
-      password_DO_NOT_STORE_IN_PRODUCTION: password,
       role,
     };
-    this.users.set(nisn, newUser);
-    return of(newUser);
+
+    await setDoc(doc(this.firestore, `users/${newUser.uid}`), newUser);
+    await setDoc(doc(this.firestore, 'meta/user-count'), {
+      count: userCount + 1,
+    });
+
+    return newUser;
   }
 
-  login(nisn: string, password: string): Observable<User> {
-    const foundUser = this.users.get(nisn);
-    if (
-      foundUser &&
-      foundUser.password_DO_NOT_STORE_IN_PRODUCTION === password
-    ) {
-      this.currentUser$.next(foundUser);
-      this.navigateOnLogin(foundUser.role);
-      return of(foundUser);
+  async login(nisn: string, password: string): Promise<User> {
+    const email = this.formatEmail(nisn);
+    const userCredential = await signInWithEmailAndPassword(
+      this.auth,
+      email,
+      password
+    );
+
+    const userDoc = await getDoc(
+      doc(this.firestore, `users/${userCredential.user.uid}`)
+    );
+    if (!userDoc.exists()) {
+      throw new Error('User details not found in database.');
     }
-    return throwError(() => new Error('NISN atau password salah.'));
+
+    const user = userDoc.data() as User;
+    return user;
   }
 
-  logout(): void {
-    const userRole = this.currentUserValue?.role;
-    this.currentUser$.next(null);
-    this.logoutSignal$.next();
+  async logout(): Promise<void> {
+    await signOut(this.auth);
     this.router.navigate(['/login']);
   }
 
-  private navigateOnLogin(role: UserRole): void {
-    if (role === UserRole.Staff) {
-      this.router.navigate(['/admin']);
-    } else {
-      this.router.navigate(['/akun']);
-    }
+  getCurrentUser(): Promise<User | null> {
+    return firstValueFrom(this.currentUser$);
   }
 }

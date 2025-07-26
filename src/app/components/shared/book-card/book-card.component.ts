@@ -11,7 +11,7 @@ import { Book } from '../../../models/book.model';
 })
 export class BookCardComponent {
   @Input() book!: Book;
-  @Output() favoriteToggled = new EventEmitter<string | number>();
+  @Output() favoriteToggled = new EventEmitter<string>();
 
   onToggleFavorite(event: MouseEvent) {
     event.stopPropagation();
