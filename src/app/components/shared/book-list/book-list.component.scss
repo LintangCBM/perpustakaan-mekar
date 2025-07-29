@@ -35,8 +35,9 @@
   gap: 25px;
   padding: 0 10px;
 
-  app-book-card {
-    width: 100%;
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
   }
 }
 

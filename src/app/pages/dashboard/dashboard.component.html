@@ -9,7 +9,10 @@
     0) {
     <div class="book-list">
       @for (item of permintaan; track item.docId) {
-      <div class="book-item">
+      <a
+        class="book-item book-item-link"
+        [routerLink]="['/buku', item.book.id]"
+      >
         <img
           [src]="item.book.coverImageUrl"
           [alt]="item.book.title"
@@ -24,12 +27,12 @@
           </p>
         </div>
         <button
-          (click)="onCancelRequest(item.docId)"
+          (click)="$event.preventDefault(); onCancelRequest(item.docId)"
           class="action-btn cancel-btn"
         >
           Batalkan
         </button>
-      </div>
+      </a>
       }
     </div>
     } @else {
@@ -45,7 +48,10 @@
     {
     <div class="book-list">
       @for (item of peminjaman; track item.book.id) {
-      <div class="book-item">
+      <a
+        class="book-item book-item-link"
+        [routerLink]="['/buku', item.book.id]"
+      >
         <img
           [src]="item.book.coverImageUrl"
           [alt]="item.book.title"
@@ -59,7 +65,7 @@
             <strong>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</strong>
           </p>
         </div>
-      </div>
+      </a>
       }
     </div>
     } @else {
@@ -71,8 +77,11 @@
     <h2>Riwayat Peminjaman</h2>
     @if (riwayatPeminjaman$ | async; as riwayat) { @if (riwayat.length > 0) {
     <div class="book-list history">
-      @for (item of riwayat; track item.book.id) {
-      <div class="book-item">
+      @for (item of riwayat; track item.docId) {
+      <a
+        class="book-item book-item-link"
+        [routerLink]="['/buku', item.book.id]"
+      >
         <img
           [src]="item.book.coverImageUrl"
           [alt]="item.book.title"
@@ -86,7 +95,7 @@
             {{ item.tanggalDikembalikan | date : "d MMMM yyyy" }}
           </p>
         </div>
-      </div>
+      </a>
       }
     </div>
     } @else {
@@ -95,6 +104,6 @@
   </section>
 
   } @else {
-  <p>Loading data pengguna...</p>
+  <p class="loading-state">Loading data pengguna...</p>
   }
 </div>

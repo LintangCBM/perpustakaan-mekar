@@ -53,3 +53,9 @@ p {
     }
   }
 }
+
+@media (max-width: 768px) {
+  .admin-actions {
+    grid-template-columns: 1fr;
+  }
+}

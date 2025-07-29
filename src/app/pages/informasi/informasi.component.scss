@@ -113,6 +113,7 @@ h2 {
 @media (max-width: 768px) {
   .visi-misi-container {
     flex-direction: column;
+    gap: 20px;
   }
   .info-grid {
     grid-template-columns: 1fr;

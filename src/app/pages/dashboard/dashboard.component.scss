@@ -54,6 +54,24 @@ h1 {
   border: 1px solid var(--border-color);
 }
 
+.book-item-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.cancel-btn {
+  background-color: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f5c6cb;
+}
+
 .book-cover {
   width: 60px;
   height: 90px;
@@ -98,6 +116,12 @@ h1 {
 }
 
 .empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--secondary-text-color);
+}
+
+.loading-state {
   text-align: center;
   padding: 20px;
   color: var(--secondary-text-color);

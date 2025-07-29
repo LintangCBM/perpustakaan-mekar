@@ -61,7 +61,14 @@ export class LoginComponent implements OnInit {
         }
       }
     } catch (err: any) {
-      this.errorMessage = err.message || 'Login gagal. Silakan coba lagi.';
+      if (err.code === 'auth/invalid-credential') {
+        this.errorMessage =
+          'NISN atau password yang Anda masukkan salah. Silakan coba lagi.';
+      } else {
+        this.errorMessage =
+          'Terjadi kesalahan. Silakan coba beberapa saat lagi.';
+        console.error('An unexpected login error occurred:', err);
+      }
     } finally {
       this.isLoading = false;
     }

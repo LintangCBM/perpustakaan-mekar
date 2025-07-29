@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
 import { adminGuard } from './shared/guards/admin-guard';
+import { studentGuard } from './shared/guards/student-guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'beranda', pathMatch: 'full' },
@@ -64,7 +65,7 @@ export const routes: Routes = [
       import('./pages/dashboard/dashboard.component').then(
         (m) => m.DashboardComponent
       ),
-    canActivate: [authGuard],
+    canActivate: [authGuard, studentGuard],
   },
   {
     path: 'admin',

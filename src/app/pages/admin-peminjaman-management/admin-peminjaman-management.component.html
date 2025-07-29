@@ -24,7 +24,6 @@
   </div>
 
   <div class="table-container">
-    <!-- Permintaan (Requests) Tab -->
     @if (activeTab === 'permintaan') {
     <table>
       <thead>
@@ -42,19 +41,21 @@
           <td>{{ item.book.title }}</td>
           <td>{{ item.userName }}</td>
           <td>{{ item.tanggalPermintaan | date : "d MMM yyyy, HH:mm" }}</td>
-          <td class="action-cell">
-            <button
-              class="action-btn approve-btn"
-              (click)="onApprove(item.docId)"
-            >
-              Setujui
-            </button>
-            <button
-              class="action-btn reject-btn"
-              (click)="onReject(item.docId)"
-            >
-              Tolak
-            </button>
+          <td>
+            <div class="action-cell">
+              <button
+                class="action-btn approve-btn"
+                (click)="onApprove(item.docId)"
+              >
+                Setujui
+              </button>
+              <button
+                class="action-btn reject-btn"
+                (click)="onReject(item.docId)"
+              >
+                Tolak
+              </button>
+            </div>
           </td>
         </tr>
         } @if (permintaan.length === 0) {
@@ -70,10 +71,7 @@
         }
       </tbody>
     </table>
-    }
-
-    <!-- Peminjaman Aktif (Active Loans) Tab -->
-    @if (activeTab === 'aktif') {
+    } @if (activeTab === 'aktif') {
     <table>
       <thead>
         <tr>
@@ -90,13 +88,15 @@
           <td>{{ item.book.title }}</td>
           <td>{{ item.userName }}</td>
           <td>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</td>
-          <td class="action-cell">
-            <button
-              class="action-btn return-btn"
-              (click)="onReturn(item.docId)"
-            >
-              Tandai Kembali
-            </button>
+          <td>
+            <div class="action-cell">
+              <button
+                class="action-btn return-btn"
+                (click)="onReturn(item.docId)"
+              >
+                Tandai Kembali
+              </button>
+            </div>
           </td>
         </tr>
         } @if (peminjaman.length === 0) {

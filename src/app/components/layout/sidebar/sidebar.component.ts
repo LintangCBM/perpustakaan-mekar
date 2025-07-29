@@ -64,7 +64,7 @@ export class SidebarComponent {
     ];
   }
 
-  private _getStudentNavItems(): NavItem[] {
+  private _getAuthenticatedBaseItems(): NavItem[] {
     return [
       ...this._getGuestNavItems(),
       {
@@ -72,6 +72,12 @@ export class SidebarComponent {
         iconSrc: 'assets/icons/mdi_book-heart.svg',
         route: '/favorit',
       },
+    ];
+  }
+
+  private _getStudentNavItems(): NavItem[] {
+    return [
+      ...this._getAuthenticatedBaseItems(),
       {
         label: 'Status Peminjaman',
         iconSrc: 'assets/icons/mdi_book-sync.svg',
@@ -82,7 +88,7 @@ export class SidebarComponent {
 
   private _getStaffNavItems(): NavItem[] {
     return [
-      ...this._getStudentNavItems(),
+      ...this._getAuthenticatedBaseItems(),
       {
         label: 'Panel Admin',
         iconSrc: 'assets/icons/mdi_book-account.svg',
@@ -91,8 +97,15 @@ export class SidebarComponent {
     ].sort((a, b) => this._getSortOrder(a.route) - this._getSortOrder(b.route));
   }
 
-   private _getSortOrder(route: string): number {
-    const order = ['/beranda', '/daftar-buku', '/favorit', '/akun', '/admin', '/informasi'];
+  private _getSortOrder(route: string): number {
+    const order = [
+      '/beranda',
+      '/daftar-buku',
+      '/favorit',
+      '/akun',
+      '/admin',
+      '/informasi',
+    ];
     const index = order.indexOf(route);
     return index === -1 ? 99 : index;
   }

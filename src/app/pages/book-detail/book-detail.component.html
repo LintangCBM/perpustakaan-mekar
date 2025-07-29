@@ -1,4 +1,4 @@
-@if (book$ | async; as book) {
+@if (book$ | async; as book) { @if (book) {
 <div class="book-detail-page">
   <div class="top-bar">
     <button (click)="goBack()" class="back-button">
@@ -19,13 +19,21 @@
       <p class="book-author">Oleh {{ book.author }}</p>
       <div class="book-meta">
         <span><strong>ID Buku : </strong> {{ book.id }}</span>
-        <span
-          ><strong>Status : </strong>
-          <span class="status-available">Tersedia</span></span
-        >
+        <span>
+          <strong>Status : </strong>
+          @if (book.isArchived) {
+          <span class="status-unavailable">Tidak Tersedia</span>
+          } @else {
+          <span class="status-available">Tersedia</span>
+          }
+        </span>
       </div>
       <div class="actions">
-        <button class="action-button borrow" (click)="onPinjamBuku(book)">
+        <button
+          class="action-button borrow"
+          (click)="onPinjamBuku(book)"
+          [disabled]="book.isArchived"
+        >
           Ajukan Peminjaman
         </button>
         <button
@@ -72,4 +80,6 @@
     >Kembali ke Daftar Buku</a
   >
 </div>
+} } @else {
+<p class="loading-state">Memuat detail buku...</p>
 }

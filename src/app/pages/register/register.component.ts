@@ -48,8 +48,21 @@ export class RegisterComponent {
       await this.authService.register(nama, nisn, password);
       this.router.navigate(['/akun']);
     } catch (err: any) {
-      this.errorMessage =
-        err.message || 'Pendaftaran gagal. Silakan coba lagi.';
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          this.errorMessage =
+            'NISN ini sudah terdaftar. Silakan gunakan NISN lain atau masuk.';
+          break;
+        case 'auth/weak-password':
+          this.errorMessage =
+            'Password terlalu lemah. Harap gunakan minimal 6 karakter.';
+          break;
+        default:
+          this.errorMessage =
+            'Pendaftaran gagal. Silakan coba beberapa saat lagi.';
+          console.error('An unexpected registration error occurred:', err);
+          break;
+      }
     } finally {
       this.isLoading = false;
     }

@@ -6,4 +6,5 @@ export interface Book {
   isFavorite?: boolean;
   categories: string[];
   description?: string;
+  isArchived?: boolean;
 }

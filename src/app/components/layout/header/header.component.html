@@ -28,8 +28,10 @@
     @if (user$ | async; as user) {
     <a
       class="header-button user-display-button"
-      routerLink="/akun"
-      title="Akun Anda"
+      [routerLink]="user.role === UserRole.Staff ? '/admin' : '/akun'"
+      [title]="
+        user.role === UserRole.Staff ? 'Panel Admin' : 'Status Peminjaman'
+      "
     >
       <img
         src="assets/icons/mdi_user-outline.svg"

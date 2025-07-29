@@ -8,5 +8,9 @@
     <h1 class="page-title">Daftar Buku</h1>
     }
   </div>
-  <app-book-list [books]="(books$ | async) || []"></app-book-list>
+  @if (books$ | async; as books) {
+  <app-book-list [books]="books"></app-book-list>
+  } @else {
+  <p class="loading-state">Memuat daftar buku...</p>
+  }
 </div>

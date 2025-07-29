@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Book } from '../../models/book.model';
 import { Observable, switchMap } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
-import { PeminjamanService } from '../../services/peminjaman.service';
+import { StudentPeminjamanService } from '../../services/student-peminjaman.service';
 import { Router } from '@angular/router';
 import { NgClass } from '@angular/common';
 
@@ -19,7 +19,7 @@ import { NgClass } from '@angular/common';
 export class BookDetailComponent {
   book$!: Observable<Book | undefined>;
   private authService = inject(AuthService);
-  private peminjamanService = inject(PeminjamanService);
+  private studentPeminjamanService = inject(StudentPeminjamanService);
   private router = inject(Router);
   borrowingFeedback: { message: string; type: 'success' | 'error' } | null =
     null;
@@ -60,7 +60,7 @@ export class BookDetailComponent {
     }
 
     try {
-      await this.peminjamanService.pinjamBuku(currentUser, book);
+      await this.studentPeminjamanService.requestNewLoan(currentUser, book);
       this.borrowingFeedback = {
         message: `Permintaan untuk meminjam "${book.title}" telah terkirim! Silakan tunggu persetujuan staf.`,
         type: 'success',

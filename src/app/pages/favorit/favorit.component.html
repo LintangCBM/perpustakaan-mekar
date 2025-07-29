@@ -1,4 +1,8 @@
 <div class="favorit-page">
   <h1 class="page-title">Buku Favorit Anda</h1>
-  <app-book-list [books]="(favoriteBooks$ | async) || []"></app-book-list>
+  @if (favoriteBooks$ | async; as books) {
+  <app-book-list [books]="books"></app-book-list>
+  } @else {
+  <p class="loading-state">Memuat buku favorit...</p>
+  }
 </div>

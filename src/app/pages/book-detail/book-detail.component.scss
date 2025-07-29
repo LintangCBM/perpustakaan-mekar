@@ -26,6 +26,7 @@
   gap: 30px;
   @media (max-width: 768px) {
     flex-direction: column;
+    align-items: center;
   }
 }
 
@@ -68,6 +69,11 @@
       color: #28a745;
       font-weight: bold;
     }
+    .status-unavailable {
+      color: var(--secondary-text-color);
+      font-weight: bold;
+      font-style: italic;
+    }
   }
   .actions {
     display: flex;
@@ -82,6 +88,14 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      &:disabled {
+        background-color: #f0f0f0;
+        opacity: 0.6;
+        cursor: not-allowed;
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
     }
     .borrow {
       background-color: #fff;
@@ -154,3 +168,10 @@
     border: 1px solid #f5c6cb;
   }
 }
+
+.loading-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--secondary-text-color);
+}
+

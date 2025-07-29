@@ -135,3 +135,23 @@
   padding-left: 5px;
   margin-top: 3px;
 }
+
+@media (max-width: 768px) {
+  .auth-container {
+    flex-direction: column;
+    width: auto;
+    max-width: none;
+    margin: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .left-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 30px 20px;
+  }
+
+  .right-panel {
+    padding: 30px 20px;
+  }
+}

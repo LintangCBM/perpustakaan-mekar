@@ -85,3 +85,19 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .welcome-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+
+    .banner-text {
+      padding-right: 0;
+      margin-bottom: 20px;
+    }
+    .banner-image img {
+      max-width: 200px;
+    }
+  }
+}

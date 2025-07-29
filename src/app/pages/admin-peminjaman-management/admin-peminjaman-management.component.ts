@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Observable, BehaviorSubject, switchMap } from 'rxjs';
+import { Observable, BehaviorSubject, switchMap, from } from 'rxjs';
+import { AdminPeminjamanService } from '../../services/admin-peminjaman.service';
 import {
-  PeminjamanService,
   PeminjamanAdminView,
   PermintaanAdminView,
-} from '../../services/peminjaman.service';
+} from '../../models/peminjaman.model';
 
 type AdminTab = 'permintaan' | 'aktif';
 
@@ -18,7 +18,7 @@ type AdminTab = 'permintaan' | 'aktif';
   standalone: true,
 })
 export class AdminPeminjamanManagementComponent implements OnInit {
-  private peminjamanService = inject(PeminjamanService);
+  private adminPeminjamanService = inject(AdminPeminjamanService);
 
   permintaan$!: Observable<PermintaanAdminView[]>;
   peminjamanAktif$!: Observable<PeminjamanAdminView[]>;
@@ -28,10 +28,10 @@ export class AdminPeminjamanManagementComponent implements OnInit {
 
   ngOnInit(): void {
     this.permintaan$ = this.refreshSignal$.pipe(
-      switchMap(() => this.peminjamanService.getSemuaPermintaan())
+      switchMap(() => this.adminPeminjamanService.getAllRequests())
     );
     this.peminjamanAktif$ = this.refreshSignal$.pipe(
-      switchMap(() => this.peminjamanService.getSemuaPeminjamanAktif())
+      switchMap(() => this.adminPeminjamanService.getAllActiveLoans())
     );
   }
 
@@ -40,19 +40,19 @@ export class AdminPeminjamanManagementComponent implements OnInit {
   }
 
   async onApprove(docId: string): Promise<void> {
-    await this.peminjamanService.approvePeminjaman(docId);
+    await this.adminPeminjamanService.approveLoanRequest(docId);
     this.refreshSignal$.next();
   }
 
   async onReject(docId: string): Promise<void> {
     if (confirm('Apakah Anda yakin ingin menolak permintaan ini?')) {
-      await this.peminjamanService.rejectPeminjaman(docId);
+      await this.adminPeminjamanService.rejectLoanRequest(docId);
       this.refreshSignal$.next();
     }
   }
 
   async onReturn(docId: string): Promise<void> {
-    await this.peminjamanService.tandaiSebagaiKembali(docId);
+    await this.adminPeminjamanService.markAsReturned(docId);
     this.refreshSignal$.next();
   }
 }

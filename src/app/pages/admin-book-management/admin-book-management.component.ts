@@ -5,7 +5,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, combineLatest, BehaviorSubject } from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -33,8 +33,9 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
   paginatedBooks: Book[] = [];
   isLoading = true;
 
-  private searchSubject = new Subject<string>();
-  private searchSubscription!: Subscription;
+  private searchSubject = new BehaviorSubject<string>('');
+  private refreshSignal$ = new Subject<void>();
+  private dataSubscription!: Subscription;
   searchTerm = '';
 
   currentPage = 1;
@@ -56,13 +57,20 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.searchSubscription = this.searchSubject
+    const searchTerm$ = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged()
+    );
+
+    const dataTrigger$ = combineLatest([
+      searchTerm$,
+      this.refreshSignal$.pipe(startWith(undefined)),
+    ]);
+
+    this.dataSubscription = dataTrigger$
       .pipe(
-        startWith(''),
         tap(() => (this.isLoading = true)),
-        debounceTime(300),
-        distinctUntilChanged(),
-        switchMap((term) => {
+        switchMap(([term]) => {
           if (term) {
             return this.bookService.searchBooks(term);
           } else {
@@ -80,8 +88,8 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.searchSubscription) {
-      this.searchSubscription.unsubscribe();
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
     }
   }
 
@@ -128,8 +136,8 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
       )
     ) {
       try {
-        await this.bookService.deleteBook(bookId);
-        this.searchSubject.next(this.searchTerm);
+        await this.bookService.archiveBook(bookId);
+        this.refreshSignal$.next();
       } catch (error) {
         console.error('Failed to delete book:', error);
         alert('Gagal menghapus buku.');
@@ -157,7 +165,7 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
       } else {
         await this.bookService.addBook(bookData);
       }
-      this.searchSubject.next(this.searchTerm);
+      this.refreshSignal$.next();
       this.closeModal();
     } catch (error) {
       console.error('Failed to save book:', error);

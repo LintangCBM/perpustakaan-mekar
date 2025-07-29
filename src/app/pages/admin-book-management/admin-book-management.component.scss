@@ -1,8 +1,3 @@
-:host {
-  display: block;
-  padding: 20px;
-}
-
 .management-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -36,6 +31,18 @@
       background-color: var(--content-bg-color);
     }
   }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+
+    .header-left {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
 }
 
 .back-button {
@@ -56,6 +63,9 @@
   padding: 20px;
   border-radius: var(--border-radius);
   box-shadow: var(--card-shadow);
+  @media (max-width: 768px) {
+    overflow-x: auto;
+  }
 }
 
 table {
