@@ -1,4 +1,8 @@
 <header class="app-header">
+  <button class="hamburger-menu" (click)="menuToggled.emit()">
+    <img src="assets/icons/material-symbols_menu-rounded.svg" alt="Buka Menu" />
+  </button>
+
   <div class="header-left">
     <img [src]="logoUrl" alt="Logo Sekolah" class="logo" />
     <div class="school-name">
@@ -26,12 +30,10 @@
 
   <div class="header-right">
     @if (user$ | async; as user) {
-    <a
+    <button
       class="header-button user-display-button"
-      [routerLink]="user.role === UserRole.Staff ? '/admin' : '/akun'"
-      [title]="
-        user.role === UserRole.Staff ? 'Panel Admin' : 'Status Peminjaman'
-      "
+      (click)="openProfileModal()"
+      title="Edit Profil"
     >
       <img
         src="assets/icons/mdi_user-outline.svg"
@@ -39,7 +41,7 @@
         class="icon icon-img"
       />
       <span class="button-text">{{ user.nama }}</span>
-    </a>
+    </button>
 
     <button class="header-button" (click)="onLogout()" title="Keluar">
       <img
@@ -62,3 +64,64 @@
     }
   </div>
 </header>
+
+@if (isProfileModalOpen) {
+<div class="profile-modal-overlay" (click)="closeProfileModal()">
+  <div class="profile-modal-content" (click)="$event.stopPropagation()">
+    <h3>Edit Profil Anda</h3>
+    <form [formGroup]="profileForm" (ngSubmit)="onProfileSubmit()">
+      <div class="form-field">
+        <label for="profile-nama">Nama</label>
+        <input id="profile-nama" type="text" formControlName="nama" />
+      </div>
+      <div class="form-field">
+        <label for="profile-nisn">NISN (tidak dapat diubah)</label>
+        <input id="profile-nisn" type="text" formControlName="nisn" />
+      </div>
+      <div class="form-field">
+        <label for="profile-email">Email</label>
+        <input id="profile-email" type="email" formControlName="email" />
+        @if (profileForm.get('email')?.hasError('email') &&
+        profileForm.get('email')?.touched) {
+        <div class="field-error">Format email tidak valid.</div>
+        }
+      </div>
+      <div class="form-field">
+        <label for="profile-telepon">No. Telepon</label>
+        <input id="profile-telepon" type="tel" formControlName="telepon" />
+        @if (profileForm.get('telepon')?.hasError('pattern') &&
+        profileForm.get('telepon')?.touched) {
+        <div class="field-error">
+          Hanya angka dan simbol telepon yang diizinkan.
+        </div>
+        }
+      </div>
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="delete-account-btn"
+          (click)="onDeleteMyAccount()"
+        >
+          Hapus Akun
+        </button>
+        <div class="main-actions">
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="closeProfileModal()"
+          >
+            Batal
+          </button>
+          <button
+            type="submit"
+            class="save-btn"
+            [disabled]="profileForm.invalid"
+          >
+            Simpan
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+}

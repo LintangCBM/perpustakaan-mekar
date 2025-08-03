@@ -6,7 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, RegistrationData } from '../../services/auth.service';
 import { passwordsMatchValidator } from '../../shared/validators/password.validator';
 
 @Component({
@@ -28,6 +28,8 @@ export class RegisterComponent {
     {
       nama: ['', Validators.required],
       nisn: ['', Validators.required],
+      email: ['', [Validators.email]],
+      telepon: ['', [Validators.pattern(/^\d{10,15}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       konfirmasiPassword: ['', Validators.required],
     },
@@ -42,10 +44,10 @@ export class RegisterComponent {
 
     this.isLoading = true;
     this.errorMessage = null;
-    const { nama, nisn, password } = this.registerForm.value;
+    const registrationData: RegistrationData = this.registerForm.value;
 
     try {
-      await this.authService.register(nama, nisn, password);
+      await this.authService.register(registrationData);
       this.router.navigate(['/akun']);
     } catch (err: any) {
       switch (err.code) {

@@ -23,6 +23,7 @@ import {
   collectionData,
   updateDoc,
   setDoc,
+  getCountFromServer,
 } from '@angular/fire/firestore';
 
 @Injectable({
@@ -59,6 +60,15 @@ export class BookService {
       ).pipe(map((snapshot) => snapshot.docs.map((doc) => doc.data() as Book)))
     );
     return this.enrichBooksWithFavorites(allBooks$);
+  }
+
+  getAllBooksForAdmin(): Observable<Book[]> {
+    const allBooks$ = runInInjectionContext(this.injector, () =>
+      from(getDocs(query(this.booksCollection, orderBy('title')))).pipe(
+        map((snapshot) => snapshot.docs.map((doc) => doc.data() as Book))
+      )
+    );
+    return allBooks$;
   }
 
   getBookById(bookId: string): Observable<Book | undefined> {
@@ -133,6 +143,23 @@ export class BookService {
     );
   }
 
+  getUniqueCategories(): Observable<string[]> {
+    return runInInjectionContext(this.injector, () => {
+      const q = query(this.booksCollection, where('isArchived', '==', false));
+      return from(getDocs(q)).pipe(
+        map((snapshot) => {
+          const allCategoriesArrays = snapshot.docs.map(
+            (doc) => (doc.data() as Book).categories || []
+          );
+          const uniqueCategories = new Set(allCategoriesArrays.flat());
+          return Array.from(uniqueCategories).sort((a, b) =>
+            a.localeCompare(b)
+          );
+        })
+      );
+    });
+  }
+
   async requestToggleFavorite(bookId: string): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
       const user = await this.authService.getCurrentUser();
@@ -204,15 +231,42 @@ export class BookService {
 
   async updateBook(bookId: string, bookData: Partial<Book>): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
-      const docRef = doc(this.booksCollection, bookId);
+      const q = query(this.booksCollection, where('id', '==', bookId));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        throw new Error('Book not found to update.');
+      }
+      const docRef = querySnapshot.docs[0].ref;
       await updateDoc(docRef, bookData);
     });
   }
 
   async archiveBook(bookId: string): Promise<void> {
     return runInInjectionContext(this.injector, async () => {
-      const docRef = doc(this.booksCollection, bookId);
+      const q = query(this.booksCollection, where('id', '==', bookId));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) throw new Error('Book not found to archive.');
+      const docRef = querySnapshot.docs[0].ref;
       await updateDoc(docRef, { isArchived: true });
+    });
+  }
+
+  async unarchiveBook(bookId: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const q = query(this.booksCollection, where('id', '==', bookId));
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) throw new Error('Book not found to unarchive.');
+      const docRef = querySnapshot.docs[0].ref;
+      await updateDoc(docRef, { isArchived: false });
+    });
+  }
+
+  getTotalBookCount(): Observable<number> {
+    return runInInjectionContext(this.injector, () => {
+      const q = query(this.booksCollection, where('isArchived', '==', false));
+      return from(getCountFromServer(q)).pipe(
+        map((snapshot) => snapshot.data().count)
+      );
     });
   }
 }

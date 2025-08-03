@@ -61,13 +61,19 @@ export class LoginComponent implements OnInit {
         }
       }
     } catch (err: any) {
-      if (err.code === 'auth/invalid-credential') {
-        this.errorMessage =
-          'NISN atau password yang Anda masukkan salah. Silakan coba lagi.';
-      } else {
-        this.errorMessage =
-          'Terjadi kesalahan. Silakan coba beberapa saat lagi.';
-        console.error('An unexpected login error occurred:', err);
+      switch (err.code) {
+        case 'auth/invalid-credential':
+          this.errorMessage =
+            'NISN atau password yang Anda masukkan salah. Silakan coba lagi.';
+          break;
+        case 'auth/account-archived':
+          this.errorMessage = err.message;
+          break;
+        default:
+          this.errorMessage =
+            'Terjadi kesalahan. Silakan coba beberapa saat lagi.';
+          console.error('An unexpected login error occurred:', err);
+          break;
       }
     } finally {
       this.isLoading = false;

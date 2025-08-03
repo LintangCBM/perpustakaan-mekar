@@ -13,9 +13,22 @@
   transition: margin-left 0.3s ease-in-out;
 }
 
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
 @media (max-width: 768px) {
   .content-area {
-    margin-left: var(--sidebar-collapsed-width);
-    padding: 15px;
+    margin-left: 0;
+  }
+  .app-footer {
+    margin-left: 0;
+    width: 100%;
   }
 }

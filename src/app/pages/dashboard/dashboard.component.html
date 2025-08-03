@@ -39,7 +39,47 @@
     <p class="empty-state">
       Anda tidak memiliki permintaan peminjaman yang tertunda.
     </p>
-    } }
+    } } @else {
+    <p class="loading-state">Memuat data...</p>
+    }
+  </section>
+
+  <section class="dashboard-section ready-pickup">
+    <h2>Buku Siap Diambil</h2>
+    @if (peminjamanDisetujui$ | async; as disetujui) { @if (disetujui.length >
+    0) {
+    <div class="book-list">
+      @for (item of disetujui; track item.docId) {
+      <a
+        class="book-item book-item-link"
+        [routerLink]="['/buku', item.book.id]"
+      >
+        <img
+          [src]="item.book.coverImageUrl"
+          [alt]="item.book.title"
+          class="book-cover"
+        />
+        <div class="book-info">
+          <h3>{{ item.book.title }}</h3>
+          <p>Oleh {{ item.book.author }}</p>
+          <p class="due-date">
+            Disetujui pada:
+            <strong>{{
+              item.tanggalPersetujuan | date : "d MMMM yyyy"
+            }}</strong>
+          </p>
+          <p class="pickup-info">Silakan ambil buku di perpustakaan.</p>
+        </div>
+      </a>
+      }
+    </div>
+    } @else {
+    <p class="empty-state">
+      Tidak ada buku yang disetujui dan siap untuk diambil.
+    </p>
+    } } @else {
+    <p class="loading-state">Memuat data...</p>
+    }
   </section>
 
   <section class="dashboard-section">
@@ -50,6 +90,7 @@
       @for (item of peminjaman; track item.book.id) {
       <a
         class="book-item book-item-link"
+        [class.overdue]="item.isOverdue"
         [routerLink]="['/buku', item.book.id]"
       >
         <img
@@ -64,22 +105,30 @@
             Batas Pengembalian:
             <strong>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</strong>
           </p>
+          @if (item.isOverdue) {
+          <span class="overdue-badge">TERLAMBAT</span>
+          }
         </div>
       </a>
       }
     </div>
     } @else {
     <p class="empty-state">Anda sedang tidak meminjam buku.</p>
-    } }
+    } } @else {
+    <p class="loading-state">Memuat data...</p>
+    }
   </section>
 
   <section class="dashboard-section">
     <h2>Riwayat Peminjaman</h2>
-    @if (riwayatPeminjaman$ | async; as riwayat) { @if (riwayat.length > 0) {
+    @if (isHistoryLoading) {
+    <p class="loading-state">Memuat data...</p>
+    } @else { @if (allRiwayat.length > 0) {
     <div class="book-list history">
-      @for (item of riwayat; track item.docId) {
+      @for (item of paginatedRiwayat; track item.docId) {
       <a
         class="book-item book-item-link"
+        [class.overdue]="item.wasReturnedLate"
         [routerLink]="['/buku', item.book.id]"
       >
         <img
@@ -94,10 +143,19 @@
             Dikembalikan pada:
             {{ item.tanggalDikembalikan | date : "d MMMM yyyy" }}
           </p>
+          @if (item.wasReturnedLate) {
+          <span class="overdue-badge">TERLAMBAT</span>
+          }
         </div>
       </a>
       }
     </div>
+    <app-pagination
+      [totalItems]="historyTotalItems"
+      [currentPage]="historyCurrentPage"
+      [itemsPerPage]="historyItemsPerPage"
+      (pageChanged)="onHistoryPageChanged($event)"
+    ></app-pagination>
     } @else {
     <p class="empty-state">Anda belum memiliki riwayat peminjaman.</p>
     } }

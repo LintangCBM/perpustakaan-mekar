@@ -99,4 +99,12 @@ export const routes: Routes = [
       ).then((m) => m.AdminPeminjamanManagementComponent),
     canActivate: [authGuard, adminGuard],
   },
+  {
+    path: 'admin/users',
+    loadComponent: () =>
+      import(
+        './pages/admin-user-management/admin-user-management.component'
+      ).then((m) => m.AdminUserManagementComponent),
+    canActivate: [authGuard, adminGuard],
+  },
 ];

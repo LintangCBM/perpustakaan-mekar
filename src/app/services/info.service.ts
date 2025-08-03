@@ -15,8 +15,8 @@ export class InfoService {
         {
           type: 'ol',
           content: [
-            'Cari buku yang Anda inginkan melalui fitur pencarian atau daftar buku.',
-            'Datang langsung ke perpustakaan dan tunjukkan buku yang ingin dipinjam kepada petugas.',
+            'Cari buku yang Anda inginkan melalui fitur pencarian atau daftar buku dan pilih ajukan peminjaman.',
+            'Datang langsung ke perpustakaan dan ambil buku yang ingin dipinjam dari petugas.',
             'Petugas akan mencatat peminjaman menggunakan ID Buku dan data keanggotaan Anda.',
             'Batas waktu peminjaman adalah 14 hari (2 minggu).',
           ],

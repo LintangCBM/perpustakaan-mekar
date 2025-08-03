@@ -16,10 +16,31 @@
     </button>
     <button
       class="tab-btn"
+      [class.active]="activeTab === 'siap-diambil'"
+      (click)="setActiveTab('siap-diambil')"
+    >
+      Siap Diambil
+    </button>
+    <button
+      class="tab-btn"
       [class.active]="activeTab === 'aktif'"
       (click)="setActiveTab('aktif')"
     >
       Sedang Dipinjam
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'terlambat'"
+      (click)="setActiveTab('terlambat')"
+    >
+      Terlambat & Denda
+    </button>
+    <button
+      class="tab-btn"
+      [class.active]="activeTab === 'riwayat'"
+      (click)="setActiveTab('riwayat')"
+    >
+      Riwayat
     </button>
   </div>
 
@@ -71,6 +92,53 @@
         }
       </tbody>
     </table>
+    } @if (activeTab === 'siap-diambil') {
+    <table>
+      <thead>
+        <tr>
+          <th>Judul Buku</th>
+          <th>Nama Peminjam</th>
+          <th>Tanggal Disetujui</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (peminjamanSiapDiambil$ | async; as siapDiambil) { @for (item of
+        siapDiambil; track item.docId) {
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>{{ item.userName }}</td>
+          <td>{{ item.tanggalPinjam | date : "d MMM yyyy, HH:mm" }}</td>
+          <td>
+            <div class="action-cell">
+              <button
+                class="action-btn approve-btn"
+                (click)="onConfirmPickup(item.docId)"
+              >
+                Konfirmasi Pengambilan
+              </button>
+              <button
+                class="action-btn reject-btn"
+                (click)="onCancelApproval(item.docId)"
+              >
+                Batalkan
+              </button>
+            </div>
+          </td>
+        </tr>
+        } @if (siapDiambil.length === 0) {
+        <tr>
+          <td colspan="4" class="empty-state">
+            Tidak ada buku yang siap diambil.
+          </td>
+        </tr>
+        } } @else {
+        <tr>
+          <td colspan="4" class="empty-state">Memuat data...</td>
+        </tr>
+        }
+      </tbody>
+    </table>
     } @if (activeTab === 'aktif') {
     <table>
       <thead>
@@ -87,12 +155,34 @@
         <tr>
           <td>{{ item.book.title }}</td>
           <td>{{ item.userName }}</td>
-          <td>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</td>
+          <td>
+            {{ item.tanggalKembali | date : "d MMMM yyyy" }}
+            @if (item.jumlahPerpanjangan && item.jumlahPerpanjangan > 0) {
+            <span class="extended-badge">Diperpanjang</span>
+            }
+          </td>
           <td>
             <div class="action-cell">
               <button
+                class="action-btn extend-btn"
+                (click)="onExtend(item)"
+                [disabled]="
+                  (item.jumlahPerpanjangan && item.jumlahPerpanjangan >= 1) ||
+                  item.isOverdue
+                "
+                [title]="
+                  item.isOverdue
+                    ? 'Tidak dapat memperpanjang buku yang terlambat'
+                    : item.jumlahPerpanjangan && item.jumlahPerpanjangan >= 1
+                    ? 'Sudah pernah diperpanjang'
+                    : 'Perpanjang 14 hari'
+                "
+              >
+                Perpanjang
+              </button>
+              <button
                 class="action-btn return-btn"
-                (click)="onReturn(item.docId)"
+                (click)="onReturnOnTime(item)"
               >
                 Tandai Kembali
               </button>
@@ -112,6 +202,107 @@
         }
       </tbody>
     </table>
+    } @if (activeTab === 'terlambat') {
+    <table>
+      <thead>
+        <tr>
+          <th>Judul Buku</th>
+          <th>Nama Peminjam</th>
+          <th>Batas Pengembalian</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (peminjamanTerlambat$ | async; as terlambat) { @for (item of
+        terlambat; track item.docId) {
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>{{ item.userName }}</td>
+          <td>{{ item.tanggalKembali | date : "d MMMM yyyy" }}</td>
+          <td>
+            <div class="action-cell">
+              <button class="action-btn return-btn" (click)="onReturn(item)">
+                Proses Pengembalian
+              </button>
+              <a
+                [href]="generateNotificationLink(item)"
+                target="_blank"
+                class="action-btn notify-btn"
+                [class.disabled]="!item.userEmail"
+                [title]="
+                  item.userEmail
+                    ? 'Kirim notifikasi email via Gmail'
+                    : 'Pengguna ini tidak memiliki alamat email'
+                "
+              >
+                Kirim Notifikasi
+              </a>
+            </div>
+          </td>
+        </tr>
+        } @if (terlambat.length === 0) {
+        <tr>
+          <td colspan="4" class="empty-state">
+            Tidak ada buku yang terlambat.
+          </td>
+        </tr>
+        } } @else {
+        <tr>
+          <td colspan="4" class="empty-state">Memuat data...</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    } @if (activeTab === 'riwayat') {
+    <table>
+      <thead>
+        <tr>
+          <th>Judul Buku</th>
+          <th>Nama Peminjam</th>
+          <th>Tanggal Pinjam</th>
+          <th>Tanggal Kembali</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isHistoryLoading) {
+        <tr>
+          <td colspan="5" class="empty-state">Memuat data...</td>
+        </tr>
+        } @else { @for (item of paginatedRiwayat; track item.docId) {
+        <tr>
+          <td>{{ item.book.title }}</td>
+          <td>{{ item.userName }}</td>
+          <td>{{ item.tanggalPinjam | date : "d MMM yyyy" }}</td>
+          <td>{{ item.tanggalDikembalikan | date : "d MMM yyyy, HH:mm" }}</td>
+          <td>
+            @if (item.wasReturnedLate) {
+            <span class="status-badge late">Terlambat</span>
+            @if (item.denda && item.denda > 0) {
+            <span class="fine-amount">
+              Denda: {{ item.denda | currency : "IDR" : "symbol" : "1.0-0" }}
+            </span>
+            } } @else {
+            <span class="status-badge on-time">Tepat Waktu</span>
+            }
+          </td>
+        </tr>
+        } @if (paginatedRiwayat.length === 0) {
+        <tr>
+          <td colspan="5" class="empty-state">Belum ada riwayat peminjaman.</td>
+        </tr>
+        } }
+      </tbody>
+    </table>
+
+    <div class="pagination-footer">
+      <app-pagination
+        [totalItems]="riwayatTotalItems"
+        [currentPage]="riwayatCurrentPage"
+        [itemsPerPage]="riwayatItemsPerPage"
+        (pageChanged)="onRiwayatPageChanged($event)"
+      ></app-pagination>
+    </div>
     }
   </div>
 </div>

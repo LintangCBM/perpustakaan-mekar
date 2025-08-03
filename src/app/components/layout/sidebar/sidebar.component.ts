@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
@@ -22,6 +22,9 @@ interface NavItem {
 export class SidebarComponent {
   private authService = inject(AuthService);
   readonly navItems$: Observable<NavItem[]>;
+
+  @Input() isMobileMenuOpen = false;
+  @Output() menuClosed = new EventEmitter<void>();
 
   constructor() {
     this.navItems$ = this.authService.currentUser$.pipe(

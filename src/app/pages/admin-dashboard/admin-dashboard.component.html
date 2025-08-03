@@ -1,9 +1,46 @@
 <div class="admin-dashboard-page">
   <h1>Dasbor Staf Perpustakaan</h1>
   <p>
-    Selamat datang di panel administrasi. Dari sini Anda dapat mengelola data
+    Selamat datang di panel administrasi. Dari sini Anda dapat melihat statistik, mengelola data
     buku, peminjaman, dan pengguna.
   </p>
+
+  <section class="stats-container">
+    @if (stats$ | async; as stats) {
+    <div class="stat-card">
+      <span class="stat-number">{{ stats.totalUsers }}</span>
+      <span class="stat-label">Total Pengguna</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ stats.totalBooks }}</span>
+      <span class="stat-label">Total Judul Buku</span>
+    </div>
+    <div class="stat-card urgent">
+      <span class="stat-number">{{ stats.pendingRequests }}</span>
+      <span class="stat-label">Permintaan Baru</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-number">{{ stats.activeLoans }}</span>
+        <span class="stat-label">Buku Dipinjam</span>
+      </div>
+      <div class="stat-card urgent">
+        <span class="stat-number">{{ stats.overdueLoans }}</span>
+        <span class="stat-label">Buku Terlambat</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ stats.loanHistory }}</span>
+        <span class="stat-label">Total Pengembalian</span>
+      </div>
+    } @else {
+    <div class="stat-card loading">Memuat...</div>
+    <div class="stat-card loading">Memuat...</div>
+    <div class="stat-card loading">Memuat...</div>
+    <div class="stat-card loading">Memuat...</div>
+    <div class="stat-card loading">Memuat...</div>
+    <div class="stat-card loading">Memuat...</div>
+    }
+  </section>
+
   <div class="admin-actions">
     <div class="action-card">
       <h3>Manajemen Buku</h3>
@@ -12,8 +49,15 @@
     </div>
     <div class="action-card">
       <h3>Manajemen Peminjaman</h3>
-      <p>Lihat semua peminjaman aktif dan proses pengembalian.</p>
-      <a routerLink="/admin/peminjaman" class="action-link">Kelola Peminjaman</a>
+      <p>Lihat semua proses dan riwayat peminjaman</p>
+      <a routerLink="/admin/peminjaman" class="action-link"
+        >Kelola Peminjaman</a
+      >
+    </div>
+    <div class="action-card">
+      <h3>Manajemen Pengguna</h3>
+      <p>Lihat, edit, atau nonaktifkan akun pengguna.</p>
+      <a routerLink="/admin/users" class="action-link">Kelola Pengguna</a>
     </div>
   </div>
 </div>

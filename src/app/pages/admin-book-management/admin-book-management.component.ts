@@ -1,17 +1,25 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Subject, Subscription, combineLatest, BehaviorSubject } from 'rxjs';
+import {
+  Subject,
+  Subscription,
+  combineLatest,
+  BehaviorSubject,
+  Observable,
+} from 'rxjs';
 import {
   debounceTime,
   distinctUntilChanged,
   switchMap,
   startWith,
   tap,
+  map,
 } from 'rxjs/operators';
 import { Book } from '../../models/book.model';
 import { BookService } from '../../services/book.service';
@@ -20,7 +28,7 @@ import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-admin-book-management',
-  imports: [ReactiveFormsModule, PaginationComponent, RouterLink],
+  imports: [ReactiveFormsModule, PaginationComponent, RouterLink, AsyncPipe],
   templateUrl: './admin-book-management.component.html',
   styleUrl: './admin-book-management.component.scss',
   standalone: true,
@@ -45,6 +53,9 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
   bookForm: FormGroup;
   isModalOpen = false;
   editingBookId: string | null = null;
+  allCategories$!: Observable<string[]>;
+
+  coverImagePreview: string | null = null;
 
   constructor() {
     this.bookForm = this.fb.group({
@@ -53,6 +64,9 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
       categories: [''],
       description: [''],
       coverImageUrl: [''],
+    });
+    this.bookForm.get('coverImageUrl')?.valueChanges.subscribe((value) => {
+      this.coverImagePreview = value;
     });
   }
 
@@ -71,11 +85,16 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
       .pipe(
         tap(() => (this.isLoading = true)),
         switchMap(([term]) => {
-          if (term) {
-            return this.bookService.searchBooks(term);
-          } else {
-            return this.bookService.getAllBooks();
-          }
+          return this.bookService.getAllBooksForAdmin().pipe(
+            map((books) => {
+              if (!term) return books;
+              return books.filter(
+                (book) =>
+                  book.title.toLowerCase().includes(term.toLowerCase()) ||
+                  book.author.toLowerCase().includes(term.toLowerCase())
+              );
+            })
+          );
         })
       )
       .subscribe((books) => {
@@ -85,6 +104,7 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
         this.applyPagination();
         this.isLoading = false;
       });
+    this.allCategories$ = this.bookService.getUniqueCategories();
   }
 
   ngOnDestroy(): void {
@@ -113,6 +133,7 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
   openAddModal(): void {
     this.editingBookId = null;
     this.bookForm.reset();
+    this.coverImagePreview = null;
     this.isModalOpen = true;
   }
 
@@ -122,6 +143,7 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
       ...book,
       categories: book.categories.join(', '),
     });
+    this.coverImagePreview = book.coverImageUrl || null;
     this.isModalOpen = true;
   }
 
@@ -129,18 +151,47 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
     this.isModalOpen = false;
   }
 
-  async onDelete(bookId: string): Promise<void> {
+  addCategoryFromSelector(category: string): void {
+    const categoriesControl = this.bookForm.get('categories');
+    if (categoriesControl) {
+      let currentValue = (categoriesControl.value || '').trim();
+      const currentCategories = new Set(
+        currentValue
+          .split(',')
+          .map((c: string) => c.trim())
+          .filter((c: string) => c)
+      );
+      if (!currentCategories.has(category)) {
+        currentValue = currentValue ? `${currentValue}, ${category}` : category;
+        categoriesControl.setValue(currentValue);
+      }
+    }
+  }
+
+  async onArchive(bookId: string): Promise<void> {
     if (
       confirm(
-        'Apakah Anda yakin ingin menghapus buku ini? Tindakan ini tidak dapat dibatalkan.'
+        'Apakah Anda yakin ingin mengarsipkan buku ini? Buku ini tidak akan terlihat oleh siswa.'
       )
     ) {
       try {
         await this.bookService.archiveBook(bookId);
         this.refreshSignal$.next();
       } catch (error) {
-        console.error('Failed to delete book:', error);
-        alert('Gagal menghapus buku.');
+        console.error('Failed to archive book:', error);
+        alert('Gagal mengarsipkan buku.');
+      }
+    }
+  }
+
+  async onUnarchive(bookId: string): Promise<void> {
+    if (confirm('Apakah Anda yakin ingin mengaktifkan kembali buku ini?')) {
+      try {
+        await this.bookService.unarchiveBook(bookId);
+        this.refreshSignal$.next();
+      } catch (error) {
+        console.error('Failed to unarchive book:', error);
+        alert('Gagal mengaktifkan kembali buku.');
       }
     }
   }
@@ -166,6 +217,7 @@ export class AdminBookManagementComponent implements OnInit, OnDestroy {
         await this.bookService.addBook(bookData);
       }
       this.refreshSignal$.next();
+      this.allCategories$ = this.bookService.getUniqueCategories();
       this.closeModal();
     } catch (error) {
       console.error('Failed to save book:', error);

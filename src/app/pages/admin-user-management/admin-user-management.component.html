@@ -1,0 +1,141 @@
+<div class="management-page">
+  <header class="page-header">
+    <div class="header-left">
+      <a routerLink="/admin" class="back-button">← Kembali</a>
+      <h1>Manajemen Pengguna</h1>
+    </div>
+  </header>
+
+  <div class="search-container">
+    <input
+      type="text"
+      placeholder="Cari berdasarkan nama atau NISN..."
+      class="search-input"
+      [value]="searchTerm"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>NISN</th>
+          <th>Email</th>
+          <th>Telepon</th>
+          <th>Peran</th>
+          <th>Status</th>
+          <th>Tindakan</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (isLoading) {
+        <tr>
+          <td colspan="5" class="empty-state">Memuat data pengguna...</td>
+        </tr>
+        } @else { @for (user of paginatedUsers; track user.uid) {
+        <tr>
+          <td>{{ user.nama }}</td>
+          <td>{{ user.nisn }}</td>
+          <td>{{ user.email || "-" }}</td>
+          <td>{{ user.telepon || "-" }}</td>
+          <td>{{ user.role === UserRole.Staff ? "Staf" : "Siswa" }}</td>
+          <td>
+            @if (user.isArchived) {
+            <span class="status-badge archived">Nonaktif</span>
+            } @else {
+            <span class="status-badge active">Aktif</span>
+            }
+          </td>
+          <td>
+            <div class="action-cell">
+              <button class="action-btn edit-btn" (click)="openEditModal(user)">
+                Edit
+              </button>
+              @if (user.isArchived) {
+              <button
+                class="action-btn activate-btn"
+                (click)="onUnarchive(user)"
+              >
+                Aktifkan
+              </button>
+              } @else {
+              <button class="action-btn delete-btn" (click)="onArchive(user)">
+                Nonaktifkan
+              </button>
+              }
+            </div>
+          </td>
+        </tr>
+        } @if (paginatedUsers.length === 0) {
+        <tr>
+          <td colspan="5" class="empty-state">
+            Tidak ada pengguna yang cocok dengan kriteria Anda.
+          </td>
+        </tr>
+        } }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-footer">
+    <app-pagination
+      [totalItems]="totalItems"
+      [currentPage]="currentPage"
+      [itemsPerPage]="itemsPerPage"
+      (pageChanged)="onPageChanged($event)"
+    ></app-pagination>
+  </div>
+</div>
+
+@if (isModalOpen) {
+<div class="modal-overlay" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3>Edit Pengguna</h3>
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <label for="user-nama">Nama</label>
+        <input id="user-nama" type="text" formControlName="nama" />
+      </div>
+      <div class="form-field">
+        <label for="user-nisn">NISN (tidak dapat diubah)</label>
+        <input id="user-nisn" type="text" formControlName="nisn" />
+      </div>
+      <div class="form-field">
+        <label for="user-email">Email</label>
+        <input id="user-email" type="email" formControlName="email" />
+        @if (userForm.get('email')?.hasError('email') &&
+        userForm.get('email')?.touched) {
+        <div class="field-error">Format email tidak valid.</div>
+        }
+      </div>
+      <div class="form-field">
+        <label for="user-telepon">Telepon</label>
+        <input id="user-telepon" type="tel" formControlName="telepon" />
+        @if (userForm.get('telepon')?.hasError('pattern') &&
+        userForm.get('telepon')?.touched) {
+        <div class="field-error">
+          Hanya angka dan simbol telepon yang diizinkan.
+        </div>
+        }
+      </div>
+      <div class="form-field">
+        <label for="user-role">Peran</label>
+        <select id="user-role" formControlName="role">
+          <option [value]="UserRole.Student">Siswa</option>
+          <option [value]="UserRole.Staff">Staf</option>
+        </select>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="closeModal()">
+          Batal
+        </button>
+        <button type="submit" class="save-btn" [disabled]="userForm.invalid">
+          Simpan
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+}

@@ -1,17 +1,19 @@
-<aside class="app-sidebar">
+<aside class="app-sidebar" [class.is-open]="isMobileMenuOpen">
+  <div class="sidebar-header">
+    <span class="sidebar-title">Menu</span>
+    <button class="close-menu" (click)="menuClosed.emit()">
+      <img src="assets/icons/material-symbols_arrow-menu-close-rounded.svg" alt="Tutup Menu">
+    </button>
+  </div>
   <nav>
     <ul>
       @for (item of (navItems$ | async); track item.route) {
-      <li>
-        <a
-          [routerLink]="item.route"
-          routerLinkActive="active-link"
-          [title]="item.label"
-        >
-          <img [src]="item.iconSrc" class="nav-icon-img" />
-          <span class="nav-label">{{ item.label }}</span>
-        </a>
-      </li>
+        <li (click)="menuClosed.emit()">
+          <a [routerLink]="item.route" routerLinkActive="active-link" [title]="item.label">
+            <img [src]="item.iconSrc" [alt]="item.label" class="nav-icon-img" />
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        </li>
       }
     </ul>
   </nav>

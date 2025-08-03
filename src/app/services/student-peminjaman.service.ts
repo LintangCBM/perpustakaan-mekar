@@ -8,7 +8,9 @@ import { Observable, from } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   PeminjamanDiminta,
+  PeminjamanDisetujui,
   PeminjamanAktif,
+  PeminjamanDoc,
   RiwayatPeminjaman,
 } from '../models/peminjaman.model';
 import { Book } from '../models/book.model';
@@ -25,16 +27,6 @@ import {
   orderBy,
   deleteDoc,
 } from '@angular/fire/firestore';
-
-interface PeminjamanDoc {
-  userId: string;
-  bookId: string;
-  book: Book;
-  status: 'diminta' | 'dipinjam' | 'dikembalikan';
-  tanggalPermintaan: any;
-  tanggalPinjam?: any;
-  tanggalDikembalikan?: any;
-}
 
 @Injectable({ providedIn: 'root' })
 export class StudentPeminjamanService {
@@ -54,14 +46,39 @@ export class StudentPeminjamanService {
       );
       return from(getDocs(q)).pipe(
         map((snapshot) =>
-          snapshot.docs.map(
-            (doc) =>
-              ({
-                ...(doc.data() as PeminjamanDoc),
-                docId: doc.id,
-                tanggalPermintaan: doc.data()['tanggalPermintaan'].toDate(),
-              } as PeminjamanDiminta)
-          )
+          snapshot.docs.map((doc) => {
+            const data = doc.data() as PeminjamanDoc;
+            return {
+              docId: doc.id,
+              userId: data.userId,
+              book: data.book,
+              tanggalPermintaan: data.tanggalPermintaan?.toDate() ?? new Date(),
+            };
+          })
+        )
+      );
+    });
+  }
+
+  getBukuSiapDiambil(userId: string): Observable<PeminjamanDisetujui[]> {
+    return runInInjectionContext(this.injector, () => {
+      const q = query(
+        this.peminjamanCollection,
+        where('userId', '==', userId),
+        where('status', '==', 'disetujui'),
+        orderBy('tanggalDisetujui', 'asc')
+      );
+      return from(getDocs(q)).pipe(
+        map((snapshot) =>
+          snapshot.docs.map((doc) => {
+            const data = doc.data() as PeminjamanDoc;
+            return {
+              docId: doc.id,
+              userId: data.userId,
+              book: data.book,
+              tanggalPersetujuan: data.tanggalDisetujui?.toDate() ?? new Date(),
+            };
+          })
         )
       );
     });
@@ -78,14 +95,19 @@ export class StudentPeminjamanService {
         map((snapshot) =>
           snapshot.docs.map((doc) => {
             const data = doc.data() as PeminjamanDoc;
+            const tanggalPinjam = data.tanggalPinjam?.toDate() ?? new Date();
+            const tanggalKembali = new Date(
+              tanggalPinjam.getTime() + 14 * 24 * 60 * 60 * 1000
+            );
+            const today = new Date();
+            const isOverdue = today > tanggalKembali;
             return {
               docId: doc.id,
               userId: data.userId,
               book: data.book,
-              tanggalPinjam: data.tanggalPinjam.toDate(),
-              tanggalKembali: new Date(
-                data.tanggalPinjam.toDate().getTime() + 14 * 24 * 60 * 60 * 1000
-              ),
+              tanggalPinjam: tanggalPinjam,
+              tanggalKembali: tanggalKembali,
+              isOverdue: isOverdue,
             };
           })
         )
@@ -98,19 +120,30 @@ export class StudentPeminjamanService {
       const q = query(
         this.peminjamanCollection,
         where('userId', '==', userId),
-        where('status', '==', 'dikembalikan')
+        where('status', '==', 'dikembalikan'),
+        orderBy('tanggalDikembalikan', 'desc'),
       );
       return from(getDocs(q)).pipe(
         map((snapshot) =>
-          snapshot.docs.map(
-            (doc) =>
-              ({
-                ...(doc.data() as PeminjamanDoc),
-                docId: doc.id,
-                tanggalPinjam: doc.data()['tanggalPinjam'].toDate(),
-                tanggalDikembalikan: doc.data()['tanggalDikembalikan'].toDate(),
-              } as RiwayatPeminjaman)
-          )
+          snapshot.docs.map((doc) => {
+            const data = doc.data() as PeminjamanDoc;
+            const tanggalPinjam = data.tanggalPinjam?.toDate() ?? new Date();
+            const tanggalDikembalikan =
+              data.tanggalDikembalikan?.toDate() ?? new Date();
+            const deadline = new Date(
+              tanggalPinjam.getTime() + 14 * 24 * 60 * 60 * 1000
+            );
+            const wasReturnedLate = tanggalDikembalikan > deadline;
+            return {
+              docId: doc.id,
+              userId: data.userId,
+              book: data.book,
+              tanggalPinjam: tanggalPinjam,
+              tanggalDikembalikan: tanggalDikembalikan,
+              wasReturnedLate: wasReturnedLate,
+              denda: data.denda || 0,
+            } as RiwayatPeminjaman;
+          })
         )
       );
     });
@@ -136,6 +169,7 @@ export class StudentPeminjamanService {
         book,
         status: 'diminta',
         tanggalPermintaan: serverTimestamp(),
+        denda: 0,
       };
       await addDoc(this.peminjamanCollection, newPeminjaman);
     });

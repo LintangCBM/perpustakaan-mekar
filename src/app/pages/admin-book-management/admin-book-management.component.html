@@ -25,6 +25,7 @@
           <th>Judul</th>
           <th>Penulis</th>
           <th>Kategori</th>
+          <th>Status</th>
           <th>Tindakan</th>
         </tr>
       </thead>
@@ -36,26 +37,46 @@
         } @else { @for (book of paginatedBooks; track book.id) {
         <tr>
           <td>
+            @if (book.coverImageUrl) {
             <img
-              [src]="
-                book.coverImageUrl ||
-                'https://placehold.co/40x60/EEE/333?text=N/A'
-              "
+              [src]="book.coverImageUrl"
               [alt]="book.title"
               class="book-cover-thumb"
             />
+            } @else {
+            <div class="book-cover-thumb placeholder">N/A</div>
+            }
           </td>
           <td>{{ book.title }}</td>
           <td>{{ book.author }}</td>
           <td>{{ book.categories.join(", ") }}</td>
           <td>
+            @if (book.isArchived) {
+            <span class="status-badge archived">Diarsipkan</span>
+            } @else {
+            <span class="status-badge active">Aktif</span>
+            }
+          </td>
+          <td>
             <div class="action-cell">
               <button class="action-btn edit-btn" (click)="openEditModal(book)">
                 Edit
               </button>
-              <button class="action-btn delete-btn" (click)="onDelete(book.id)">
-                Hapus
+              @if (book.isArchived) {
+              <button
+                class="action-btn activate-btn"
+                (click)="onUnarchive(book.id)"
+              >
+                Aktifkan
               </button>
+              } @else {
+              <button
+                class="action-btn delete-btn"
+                (click)="onArchive(book.id)"
+              >
+                Arsipkan
+              </button>
+              }
             </div>
           </td>
         </tr>
@@ -83,6 +104,19 @@
 <div class="modal-overlay" (click)="closeModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h3>{{ editingBookId ? "Edit Buku" : "Tambah Buku Baru" }}</h3>
+
+    <div class="image-preview-container">
+      @if (coverImagePreview) {
+      <img
+        [src]="coverImagePreview"
+        alt="Pratinjau Cover"
+        class="cover-preview"
+      />
+      } @else {
+      <div class="cover-placeholder">Pratinjau Cover</div>
+      }
+    </div>
+
     <form [formGroup]="bookForm" (ngSubmit)="onSubmit()">
       <div class="form-field">
         <label for="title">Judul</label>
@@ -93,8 +127,25 @@
         <input id="author" type="text" formControlName="author" />
       </div>
       <div class="form-field">
-        <label for="categories">Kategori (pisahkan dengan koma)</label>
-        <input id="categories" type="text" formControlName="categories" />
+        <label for="categories">Kategori</label>
+        <div class="category-selector">
+          @if (allCategories$ | async; as categories) { @for (category of
+          categories; track category) {
+          <button
+            type="button"
+            class="category-tag"
+            (click)="addCategoryFromSelector(category)"
+          >
+            + {{ category }}
+          </button>
+          } }
+        </div>
+        <input
+          id="categories"
+          type="text"
+          formControlName="categories"
+          placeholder="Pilih dari atas, atau ketik baru dipisahkan koma"
+        />
       </div>
       <div class="form-field">
         <label for="description">Deskripsi</label>
@@ -105,8 +156,18 @@
         ></textarea>
       </div>
       <div class="form-field">
-        <label for="coverImageUrl">URL Gambar Cover (Opsional)</label>
-        <input id="coverImageUrl" type="text" formControlName="coverImageUrl" />
+        <label for="coverImageUrl">URL Gambar Cover</label>
+        <p class="field-instructions">
+          Upload gambar ke
+          <a href="https://postimages.org/" target="_blank">PostImages</a> atau
+          host lain, lalu paste <strong>"Direct Link"</strong> gambar di sini.
+        </p>
+        <input
+          id="coverImageUrl"
+          type="text"
+          formControlName="coverImageUrl"
+          placeholder="https://i.ibb.co/..."
+        />
       </div>
       <div class="modal-actions">
         <button type="button" class="cancel-btn" (click)="closeModal()">

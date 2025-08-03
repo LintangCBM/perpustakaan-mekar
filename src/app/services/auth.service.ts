@@ -17,7 +17,27 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from '@angular/fire/auth';
-import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  orderBy,
+  getCountFromServer,
+} from '@angular/fire/firestore';
+
+export interface RegistrationData {
+  nama: string;
+  nisn: string;
+  password: string;
+  email?: string;
+  telepon?: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +47,7 @@ export class AuthService {
   private firestore: Firestore = inject(Firestore);
   private router: Router = inject(Router);
   private injector: Injector;
+  private usersCollection = collection(this.firestore, 'users');
 
   constructor() {
     this.injector = inject(Injector);
@@ -62,19 +83,21 @@ export class AuthService {
     return `${nisn}@sdngejayan.edu`;
   }
 
-  async register(nama: string, nisn: string, password: string): Promise<User> {
+  async register(data: RegistrationData): Promise<User> {
     return runInInjectionContext(this.injector, async () => {
-      const email = this.formatEmail(nisn);
+      const systemEmail = this.formatEmail(data.nisn);
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
-        email,
-        password
+        systemEmail,
+        data.password
       );
       const newUser: User = {
         uid: userCredential.user.uid,
-        nama,
-        nisn,
+        nama: data.nama,
+        nisn: data.nisn,
         role: UserRole.Student,
+        email: data.email || '',
+        telepon: data.telepon || '',
       };
       await setDoc(doc(this.firestore, `users/${newUser.uid}`), newUser);
       return newUser;
@@ -94,7 +117,15 @@ export class AuthService {
       );
       if (!userDoc.exists())
         throw new Error('User details not found in database.');
-      return userDoc.data() as User;
+      const user = userDoc.data() as User;
+      if (user.isArchived) {
+        await signOut(this.auth);
+        throw { 
+          code: 'auth/account-archived', 
+          message: 'Akun ini telah dinonaktifkan dan tidak dapat diakses.' 
+        };
+      }
+      return user;
     });
   }
 
@@ -114,6 +145,54 @@ export class AuthService {
       const userDocRef = doc(this.firestore, `users/${uid}`);
       const docSnap = await getDoc(userDocRef);
       return docSnap.exists() ? (docSnap.data() as User) : null;
+    });
+  }
+
+  getAllUsers(): Observable<User[]> {
+    return runInInjectionContext(this.injector, () => {
+      const q = query(this.usersCollection, orderBy('nama'));
+      return from(getDocs(q)).pipe(
+        map((snapshot) => snapshot.docs.map((doc) => doc.data() as User))
+      );
+    });
+  }
+
+  async updateUserData(uid: string, data: Partial<User>): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const currentUser = await this.getCurrentUser();
+      if (
+        currentUser?.uid === uid &&
+        data.role &&
+        data.role !== currentUser.role
+      ) {
+        throw new Error('You cannot change your own role.');
+      }
+
+      const userDocRef = doc(this.firestore, `users/${uid}`);
+      await updateDoc(userDocRef, data);
+    });
+  }
+
+  async archiveUser(uid: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const userDocRef = doc(this.firestore, `users/${uid}`);
+      await updateDoc(userDocRef, { isArchived: true });
+    });
+  }
+
+  async unarchiveUser(uid: string): Promise<void> {
+    return runInInjectionContext(this.injector, async () => {
+      const userDocRef = doc(this.firestore, `users/${uid}`);
+      await updateDoc(userDocRef, { isArchived: false });
+    });
+  }
+
+  getTotalUserCount(): Observable<number> {
+    return runInInjectionContext(this.injector, () => {
+      const q = query(this.usersCollection);
+      return from(getCountFromServer(q)).pipe(
+        map((snapshot) => snapshot.data().count)
+      );
     });
   }
 }

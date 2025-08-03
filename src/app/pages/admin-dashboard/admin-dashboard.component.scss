@@ -54,7 +54,53 @@ p {
   }
 }
 
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.stat-card {
+  background-color: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  &.loading {
+    color: var(--secondary-text-color);
+  }
+
+  &.urgent {
+    border-left: 4px solid #c5221f;
+  }
+}
+
+.stat-number {
+  font-size: 2.5em;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.stat-label {
+  margin-top: 5px;
+  font-size: 0.9em;
+  color: var(--secondary-text-color);
+}
+
+@media (max-width: 992px) {
+  .stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
   .admin-actions {
     grid-template-columns: 1fr;
   }
