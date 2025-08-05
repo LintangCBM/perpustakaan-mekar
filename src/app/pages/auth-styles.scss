@@ -136,6 +136,47 @@
   margin-top: 3px;
 }
 
+.selection-prompt {
+  text-align: center;
+  color: var(--secondary-text-color);
+  margin-bottom: 25px;
+}
+
+.login-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.selection-btn {
+  padding: 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  text-align: center;
+  font-weight: 600;
+  font-size: 1.1em;
+  text-decoration: none;
+  background-color: white;
+  color: var(--text-color);
+  transition: background-color 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.back-link {
+  text-align: center;
+  margin-top: 15px;
+  a {
+    font-size: 0.9em;
+    color: var(--secondary-text-color);
+    text-decoration: underline;
+  }
+}
+
 @media (max-width: 768px) {
   .auth-container {
     flex-direction: column;

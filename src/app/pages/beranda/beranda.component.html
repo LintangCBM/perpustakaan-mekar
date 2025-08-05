@@ -15,26 +15,34 @@
 
   <section class="book-section">
     <h2>Buku Terbaru</h2>
+    @if (bukuTerbaru$ | async; as books) {
     <div class="horizontal-scroll-container">
-      @for (book of (bukuTerbaru$ | async); track book.id) {
+      @for (book of books; track book.id) {
       <app-book-card
         [book]="book"
         (favoriteToggled)="handleFavoriteToggled($event)"
       ></app-book-card>
       }
     </div>
+    } @else {
+    <p class="loading-state">Memuat buku terbaru...</p>
+    }
   </section>
 
   <section class="book-section">
     <h2>Daftar Buku</h2>
+    @if (daftarBukuPreview$ | async; as books) {
     <div class="horizontal-scroll-container">
-      @for (book of (daftarBukuPreview$ | async); track book.id) {
+      @for (book of books; track book.id) {
       <app-book-card
         [book]="book"
         (favoriteToggled)="handleFavoriteToggled($event)"
       ></app-book-card>
       }
     </div>
+    } @else {
+    <p class="loading-state">Memuat daftar buku...</p>
+    }
     <div class="see-more-container">
       <a routerLink="/daftar-buku" class="see-more-link">
         Selengkapnya

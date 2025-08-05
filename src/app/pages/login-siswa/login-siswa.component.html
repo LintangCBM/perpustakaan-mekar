@@ -1,0 +1,42 @@
+<div class="auth-container">
+  <div class="left-panel">
+    <img src="assets/images/logo.png" alt="Logo" class="logo" />
+    <h1>Perpustakaan</h1>
+    <h2>SD Negeri Gejayan</h2>
+  </div>
+  <div class="right-panel">
+    <h3>Masuk Siswa</h3>
+    @if (successMessage) {
+    <p class="success-message">{{ successMessage }}</p>
+    }
+    <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-field">
+        <input type="number" placeholder="NISN" formControlName="nisn" />
+        @if (loginForm.get('nisn')?.hasError('pattern') &&
+        loginForm.get('nisn')?.touched) {
+        <div class="field-error">NISN hanya boleh berisi angka.</div>
+        }
+      </div>
+      <div class="form-field">
+        <input
+          type="password"
+          placeholder="Password"
+          formControlName="password"
+        />
+      </div>
+      @if (errorMessage) {
+      <p class="error-message">{{ errorMessage }}</p>
+      }
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="isLoading || loginForm.invalid"
+      >
+        Masuk
+      </button>
+    </form>
+    <div class="back-link">
+      <a routerLink="/login/staf">Masuk sebagai Staf</a>
+    </div>
+  </div>
+</div>

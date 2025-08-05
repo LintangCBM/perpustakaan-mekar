@@ -2,19 +2,37 @@
   <div class="sidebar-header">
     <span class="sidebar-title">Menu</span>
     <button class="close-menu" (click)="menuClosed.emit()">
-      <img src="assets/icons/material-symbols_arrow-menu-close-rounded.svg" alt="Tutup Menu">
+      <img
+        src="assets/icons/material-symbols_arrow-menu-close-rounded.svg"
+        alt="Tutup Menu"
+      />
     </button>
   </div>
+  @if (navItems$ | async; as navItems) {
   <nav>
     <ul>
-      @for (item of (navItems$ | async); track item.route) {
-        <li (click)="menuClosed.emit()">
-          <a [routerLink]="item.route" routerLinkActive="active-link" [title]="item.label">
-            <img [src]="item.iconSrc" [alt]="item.label" class="nav-icon-img" />
-            <span class="nav-label">{{ item.label }}</span>
-          </a>
-        </li>
+      @for (item of navItems; track item.route) {
+      <li (click)="menuClosed.emit()">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+          [title]="item.label"
+        >
+          <img [src]="item.iconSrc" [alt]="item.label" class="nav-icon-img" />
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      </li>
       }
     </ul>
   </nav>
+  } @else {
+  <div class="skeleton-loader">
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+    <div class="skeleton-item">
+      <div class="skeleton-icon"></div>
+      <div class="skeleton-label"></div>
+    </div>
+    }
+  </div>
+  }
 </aside>

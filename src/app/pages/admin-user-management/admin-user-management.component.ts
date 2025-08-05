@@ -85,7 +85,7 @@ export class AdminUserManagementComponent implements OnInit, OnDestroy {
         this.allUsers = users.filter(
           (user) =>
             user.nama.toLowerCase().includes(term) ||
-            user.nisn.toLowerCase().includes(term)
+            String(user.nisn).toLowerCase().includes(term)
         );
 
         this.totalItems = this.allUsers.length;

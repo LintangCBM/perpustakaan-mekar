@@ -29,7 +29,7 @@ export class RegisterComponent {
       nama: ['', Validators.required],
       nisn: ['', Validators.required],
       email: ['', [Validators.email]],
-      telepon: ['', [Validators.pattern(/^\d{10,15}$/)]],
+      telepon: ['', [Validators.pattern(/^\d{8,15}$/)]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       konfirmasiPassword: ['', Validators.required],
     },
@@ -44,10 +44,10 @@ export class RegisterComponent {
 
     this.isLoading = true;
     this.errorMessage = null;
-    const registrationData: RegistrationData = this.registerForm.value;
+    const { nama, nisn, email, telepon, password } = this.registerForm.value;
 
     try {
-      await this.authService.register(registrationData);
+      await this.authService.register(nama, Number(nisn), password, email, telepon);
       this.router.navigate(['/akun']);
     } catch (err: any) {
       switch (err.code) {

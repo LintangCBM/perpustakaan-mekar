@@ -2,6 +2,9 @@ import { Routes } from '@angular/router';
 import { authGuard } from './shared/guards/auth-guard';
 import { adminGuard } from './shared/guards/admin-guard';
 import { studentGuard } from './shared/guards/student-guard';
+import { LoginLandingComponent } from './pages/login-landing/login-landing.component';
+import { LoginSiswaComponent } from './pages/login-siswa/login-siswa.component';
+import { LoginStafComponent } from './pages/login-staf/login-staf.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'beranda', pathMatch: 'full' },
@@ -49,8 +52,15 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () =>
-      import('./pages/login/login.component').then((m) => m.LoginComponent),
+    component: LoginLandingComponent,
+  },
+  {
+    path: 'login/siswa',
+    component: LoginSiswaComponent,
+  },
+  {
+    path: 'login/staf',
+    component: LoginStafComponent,
   },
   {
     path: 'register',

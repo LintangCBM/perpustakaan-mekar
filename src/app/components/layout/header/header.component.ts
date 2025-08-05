@@ -97,7 +97,7 @@ export class HeaderComponent {
     if (!this.currentUser) return;
     if (
       confirm(
-        'Apakah Anda yakin ingin menghapus akun Anda? Anda tidak akan bisa masuk lagi setelah ini.'
+        'Apakah Anda yakin ingin menonaktifkan akun Anda? Anda tidak akan bisa masuk lagi setelah ini.'
       )
     ) {
       try {

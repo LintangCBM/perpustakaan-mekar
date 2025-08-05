@@ -10,13 +10,13 @@ import { AuthService } from '../../services/auth.service';
 import { UserRole } from '../../models/user-role.enum';
 
 @Component({
-  selector: 'app-login',
-  imports: [RouterLink, ReactiveFormsModule],
-  templateUrl: './login.component.html',
-  styleUrl: '../auth-styles.scss',
+  selector: 'app-login-staf',
   standalone: true,
+  imports: [RouterLink, ReactiveFormsModule],
+  templateUrl: './login-staf.component.html',
+  styleUrl: '../auth-styles.scss',
 })
-export class LoginComponent implements OnInit {
+export class LoginStafComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -24,19 +24,15 @@ export class LoginComponent implements OnInit {
 
   isLoading = false;
   errorMessage: string | null = null;
-  successMessage: string | null = null;
   private returnUrl: string | null = null;
 
   loginForm: FormGroup = this.fb.group({
-    nisn: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
-      if (params.get('registered') === 'true') {
-        this.successMessage = 'Pendaftaran berhasil! Silakan masuk.';
-      }
       this.returnUrl = params.get('returnUrl');
     });
   }
@@ -46,37 +42,35 @@ export class LoginComponent implements OnInit {
 
     this.isLoading = true;
     this.errorMessage = null;
-    this.successMessage = null;
-    const { nisn, password } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
     try {
-      const user = await this.authService.login(nisn, password);
+      await this.authService.loginStaff(email, password);
+
       if (this.returnUrl) {
         this.router.navigateByUrl(this.returnUrl);
       } else {
-        if (user.role === UserRole.Staff) {
-          this.router.navigate(['/admin']);
-        } else {
-          this.router.navigate(['/akun']);
-        }
+        this.router.navigate(['/admin']);
       }
     } catch (err: any) {
-      switch (err.code) {
-        case 'auth/invalid-credential':
-          this.errorMessage =
-            'NISN atau password yang Anda masukkan salah. Silakan coba lagi.';
-          break;
-        case 'auth/account-archived':
-          this.errorMessage = err.message;
-          break;
-        default:
-          this.errorMessage =
-            'Terjadi kesalahan. Silakan coba beberapa saat lagi.';
-          console.error('An unexpected login error occurred:', err);
-          break;
-      }
+      this.handleLoginError(err);
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  private handleLoginError(err: any): void {
+    switch (err.code) {
+      case 'auth/invalid-credential':
+        this.errorMessage = 'Email atau password yang Anda masukkan salah.';
+        break;
+      case 'auth/account-archived':
+        this.errorMessage = err.message;
+        break;
+      default:
+        this.errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+        console.error('An unexpected login error occurred:', err);
+        break;
     }
   }
 }

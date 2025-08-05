@@ -83,33 +83,39 @@ export class AuthService {
     return `${nisn}@sdngejayan.edu`;
   }
 
-  async register(data: RegistrationData): Promise<User> {
+  async register(
+    nama: string,
+    nisn: number,
+    password: string,
+    email?: string,
+    telepon?: string
+  ): Promise<User> {
     return runInInjectionContext(this.injector, async () => {
-      const systemEmail = this.formatEmail(data.nisn);
+      const systemEmail = `${nisn}@sdngejayan.edu`;
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
         systemEmail,
-        data.password
+        password
       );
       const newUser: User = {
         uid: userCredential.user.uid,
-        nama: data.nama,
-        nisn: data.nisn,
+        nama,
+        nisn,
         role: UserRole.Student,
-        email: data.email || '',
-        telepon: data.telepon || '',
+        email: email || '',
+        telepon: telepon || '',
       };
       await setDoc(doc(this.firestore, `users/${newUser.uid}`), newUser);
       return newUser;
     });
   }
 
-  async login(nisn: string, password: string): Promise<User> {
+  async loginStudent(nisn: number, password: string): Promise<User> {
     return runInInjectionContext(this.injector, async () => {
-      const email = this.formatEmail(nisn);
+      const systemEmail = `${nisn}@sdngejayan.edu`;
       const userCredential = await signInWithEmailAndPassword(
         this.auth,
-        email,
+        systemEmail,
         password
       );
       const userDoc = await getDoc(
@@ -120,9 +126,39 @@ export class AuthService {
       const user = userDoc.data() as User;
       if (user.isArchived) {
         await signOut(this.auth);
-        throw { 
-          code: 'auth/account-archived', 
-          message: 'Akun ini telah dinonaktifkan dan tidak dapat diakses.' 
+        throw {
+          code: 'auth/account-archived',
+          message: 'Akun ini telah dinonaktifkan dan tidak dapat diakses.',
+        };
+      }
+      return user;
+    });
+  }
+
+  async loginStaff(email: string, password: string): Promise<User> {
+    return runInInjectionContext(this.injector, async () => {
+      const userCredential = await signInWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
+      const userDoc = await getDoc(
+        doc(this.firestore, `users/${userCredential.user.uid}`)
+      );
+      if (!userDoc.exists()) throw new Error('User details not found.');
+      const user = userDoc.data() as User;
+      if (user.isArchived) {
+        await signOut(this.auth);
+        throw {
+          code: 'auth/account-archived',
+          message: 'Akun ini telah dinonaktifkan dan tidak dapat diakses.',
+        };
+      }
+      if (user.role !== UserRole.Staff) {
+        await signOut(this.auth);
+        throw {
+          code: 'auth/invalid-credential',
+          message: 'Akun ini bukan akun staf.',
         };
       }
       return user;
