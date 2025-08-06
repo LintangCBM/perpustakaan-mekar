@@ -1,0 +1,61 @@
+@media print {
+  app-header,
+  app-sidebar,
+  app-footer,
+  .page-header,
+  .tab-container,
+  .action-btn,
+  .action-cell button,
+  .pagination-footer {
+    display: none !important;
+  }
+  .paginated-table-container {
+    display: none !important;
+  }
+  .print-only-table-container {
+    display: block !important;
+  }
+
+  body, .content-area, .management-page {
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: white !important;
+    box-shadow: none !important;
+  }
+
+  .table-container {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
+  table {
+    width: 100%;
+    font-size: 10pt;
+    color: black;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+  }
+
+  th:last-child,
+  td:last-child {
+    display: table-cell;
+  }
+
+  body::before {
+    content: "Laporan Riwayat Peminjaman - Perpustakaan Mekar";
+    display: block;
+    text-align: center;
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+}

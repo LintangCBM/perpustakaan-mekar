@@ -1,7 +1,13 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { AsyncPipe, DatePipe, CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Observable, BehaviorSubject, switchMap, map, Subscription } from 'rxjs';
+import {
+  Observable,
+  BehaviorSubject,
+  switchMap,
+  map,
+  Subscription,
+} from 'rxjs';
 import { PaginationComponent } from '../../components/shared/pagination/pagination.component';
 import { AdminPeminjamanService } from '../../services/admin-peminjaman.service';
 import {
@@ -45,6 +51,10 @@ export class AdminPeminjamanManagementComponent implements OnInit, OnDestroy {
 
   private refreshSignal$ = new BehaviorSubject<void>(undefined);
 
+  onPrint(): void {
+    window.print();
+  }
+
   ngOnInit(): void {
     this.permintaan$ = this.refreshSignal$.pipe(
       switchMap(() => this.adminPeminjamanService.getAllRequests())
@@ -62,7 +72,7 @@ export class AdminPeminjamanManagementComponent implements OnInit, OnDestroy {
     const riwayat$ = this.refreshSignal$.pipe(
       switchMap(() => this.adminPeminjamanService.getSemuaRiwayat())
     );
-    this.historySubscription = riwayat$.subscribe(riwayat => {
+    this.historySubscription = riwayat$.subscribe((riwayat) => {
       this.allRiwayat = riwayat;
       this.riwayatTotalItems = this.allRiwayat.length;
       this.riwayatCurrentPage = 1;
@@ -124,7 +134,9 @@ export class AdminPeminjamanManagementComponent implements OnInit, OnDestroy {
     try {
       await this.adminPeminjamanService.extendLoan(peminjaman);
       this.refreshSignal$.next();
-      alert(`Batas waktu untuk buku "${peminjaman.book.title}" berhasil diperpanjang.`);
+      alert(
+        `Batas waktu untuk buku "${peminjaman.book.title}" berhasil diperpanjang.`
+      );
     } catch (error: any) {
       alert(`Gagal memperpanjang: ${error.message}`);
       console.error(error);

@@ -126,7 +126,7 @@ export class AdminPeminjamanService {
   private async enrichWithUserDetails<T extends { userId: string }>(
     peminjaman: T[]
   ): Promise<
-    (T & { userName: string; userEmail?: string; userTelepon?: string })[]
+    (T & { userName: string; userEmail?: string; userTelepon?: string; userNisn?: number })[]
   > {
     const userIdsToFetch = [...new Set(peminjaman.map((p) => p.userId))];
     const usersToFetchFromDb = userIdsToFetch.filter(
@@ -150,6 +150,7 @@ export class AdminPeminjamanService {
         userName: cachedUser?.nama || 'Nama Tidak Ditemukan',
         userEmail: cachedUser?.email,
         userTelepon: cachedUser?.telepon,
+        userNisn: cachedUser?.nisn,
       };
     });
   }

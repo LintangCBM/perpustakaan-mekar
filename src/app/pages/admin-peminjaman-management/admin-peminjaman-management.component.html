@@ -4,6 +4,9 @@
       <a routerLink="/admin" class="back-button">← Kembali</a>
       <h1>Manajemen Peminjaman</h1>
     </div>
+    @if (activeTab === 'riwayat') {
+    <button class="print-btn" (click)="onPrint()">Cetak Laporan</button>
+    }
   </header>
 
   <div class="tab-container">
@@ -92,6 +95,7 @@
         }
       </tbody>
     </table>
+
     } @if (activeTab === 'siap-diambil') {
     <table>
       <thead>
@@ -139,6 +143,7 @@
         }
       </tbody>
     </table>
+
     } @if (activeTab === 'aktif') {
     <table>
       <thead>
@@ -202,6 +207,7 @@
         }
       </tbody>
     </table>
+
     } @if (activeTab === 'terlambat') {
     <table>
       <thead>
@@ -253,55 +259,97 @@
         }
       </tbody>
     </table>
-    } @if (activeTab === 'riwayat') {
-    <table>
-      <thead>
-        <tr>
-          <th>Judul Buku</th>
-          <th>Nama Peminjam</th>
-          <th>Tanggal Pinjam</th>
-          <th>Tanggal Kembali</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @if (isHistoryLoading) {
-        <tr>
-          <td colspan="5" class="empty-state">Memuat data...</td>
-        </tr>
-        } @else { @for (item of paginatedRiwayat; track item.docId) {
-        <tr>
-          <td>{{ item.book.title }}</td>
-          <td>{{ item.userName }}</td>
-          <td>{{ item.tanggalPinjam | date : "d MMM yyyy" }}</td>
-          <td>{{ item.tanggalDikembalikan | date : "d MMM yyyy, HH:mm" }}</td>
-          <td>
-            @if (item.wasReturnedLate) {
-            <span class="status-badge late">Terlambat</span>
-            @if (item.denda && item.denda > 0) {
-            <span class="fine-amount">
-              Denda: {{ item.denda | currency : "IDR" : "symbol" : "1.0-0" }}
-            </span>
-            } } @else {
-            <span class="status-badge on-time">Tepat Waktu</span>
-            }
-          </td>
-        </tr>
-        } @if (paginatedRiwayat.length === 0) {
-        <tr>
-          <td colspan="5" class="empty-state">Belum ada riwayat peminjaman.</td>
-        </tr>
-        } }
-      </tbody>
-    </table>
 
-    <div class="pagination-footer">
-      <app-pagination
-        [totalItems]="riwayatTotalItems"
-        [currentPage]="riwayatCurrentPage"
-        [itemsPerPage]="riwayatItemsPerPage"
-        (pageChanged)="onRiwayatPageChanged($event)"
-      ></app-pagination>
+    } @if (activeTab === 'riwayat') {
+    <div class="paginated-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Judul Buku</th>
+            <th>Nama Peminjam</th>
+            <th>NISN</th>
+            <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @if (isHistoryLoading) {
+          <tr>
+            <td colspan="5" class="empty-state">Memuat data...</td>
+          </tr>
+          } @else { @for (item of paginatedRiwayat; track item.docId) {
+          <tr>
+            <td>{{ item.book.title }}</td>
+            <td>{{ item.userName }}</td>
+            <td>{{ item.userNisn || "-" }}</td>
+            <td>{{ item.tanggalPinjam | date : "d MMM yyyy, HH:mm" }}</td>
+            <td>{{ item.tanggalDikembalikan | date : "d MMM yyyy, HH:mm" }}</td>
+            <td>
+              @if (item.wasReturnedLate) {
+              <span class="status-badge late">Terlambat</span>
+              @if (item.denda && item.denda > 0) {
+              <span class="fine-amount">
+                Denda: {{ item.denda | currency : "IDR" : "symbol" : "1.0-0" }}
+              </span>
+              } } @else {
+              <span class="status-badge on-time">Tepat Waktu</span>
+              }
+            </td>
+          </tr>
+          } @if (paginatedRiwayat.length === 0) {
+          <tr>
+            <td colspan="5" class="empty-state">
+              Belum ada riwayat peminjaman.
+            </td>
+          </tr>
+          } }
+        </tbody>
+      </table>
+      <div class="pagination-footer">
+        <app-pagination
+          [totalItems]="riwayatTotalItems"
+          [currentPage]="riwayatCurrentPage"
+          [itemsPerPage]="riwayatItemsPerPage"
+          (pageChanged)="onRiwayatPageChanged($event)"
+        ></app-pagination>
+      </div>
+    </div>
+    <div class="print-only-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Judul Buku</th>
+            <th>Nama Peminjam</th>
+            <th>NISN</th>
+            <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of allRiwayat; track item.docId) {
+          <tr>
+            <td>{{ item.book.title }}</td>
+            <td>{{ item.userName }}</td>
+            <td>{{ item.userNisn || "-" }}</td>
+            <td>{{ item.tanggalPinjam | date : "d MMM yyyy, HH:mm" }}</td>
+            <td>{{ item.tanggalDikembalikan | date : "d MMM yyyy, HH:mm" }}</td>
+            <td>
+              @if (item.wasReturnedLate) {
+              <span class="status-badge late">Terlambat</span>
+              @if (item.denda && item.denda > 0) {
+              <span class="fine-amount">
+                Denda: {{ item.denda | currency : "IDR" : "symbol" : "1.0-0" }}
+              </span>
+              } } @else {
+              <span class="status-badge on-time">Tepat Waktu</span>
+              }
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
     </div>
     }
   </div>

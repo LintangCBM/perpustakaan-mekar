@@ -46,6 +46,7 @@ export interface PermintaanAdminView extends PeminjamanDiminta {
 }
 export interface RiwayatAdminView extends RiwayatPeminjaman {
   userName: string;
+  userNisn?: number;
 }
 
 export interface PeminjamanDoc {

@@ -29,7 +29,7 @@ export class RegisterComponent {
       nama: ['', Validators.required],
       nisn: ['', Validators.required],
       email: ['', [Validators.email]],
-      telepon: ['', [Validators.pattern(/^\d{8,15}$/)]],
+      telepon: ['', [Validators.pattern('^[0-9+-\\s()]*$')]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       konfirmasiPassword: ['', Validators.required],
     },
